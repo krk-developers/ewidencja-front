@@ -1,8 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import {eventBus} from '../main.js';
-
 Vue.use(Vuex);
 
 export const store = new Vuex.Store({

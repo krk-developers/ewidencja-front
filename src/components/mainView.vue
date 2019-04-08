@@ -54,6 +54,7 @@ export default {
         plugins: [ dayGridPlugin, interactionPlugin, listPlugin ],
         defaultView: 'dayGridMonth',
         locale: 'pl',
+        timeZone: 'local',
         // selectable: true,
         eventLimit: true,
         firstDay: 1,
@@ -77,10 +78,9 @@ export default {
           else if(date.getDay() === 0){ return 'Niedziela' }
         },
         eventClick(e){
-          // console.log(e);
           e.event.remove();
         },
-        // select(e){}
+        // select(e){ console.log(e); }
       });
 
       vue.calendar = calendar;
@@ -89,9 +89,9 @@ export default {
     getWorkers: function(){
       // const url = 'https://ewidencja.vipserv.org/backend/public/api/workers';
       // this.$http.get(url
-      // // , {headers:{
-      // //   'Origin': 'https://ewidencja.vipserv.org'
-      // //   }}
+      // , {headers:{
+      //   'Origin': 'https://ewidencja.vipserv.org'
+      //   }}
       //   ).then(res => {
       //     console.log(res.bodyText);
       //     return res.body;
@@ -103,7 +103,6 @@ export default {
       this.workers = JSON.parse(workersJSON).data;
     },
     addEvent(data){
-      const date = new Date();
       data.id = new Date().getTime();
       data.allDay = true;
 
@@ -120,11 +119,11 @@ export default {
     },
     showEvents(){
       const events = this.calendar.getEvents();
-      const je = [];
+      const eventsArray = [];
       // console.log(events);
       events.forEach((e) => {
         // console.log(e.id);
-        je.push({
+        eventsArray.push({
           id: e.id,
           title: e.title,
           start: e.start,
@@ -133,7 +132,7 @@ export default {
         });
       });
 
-      this.eventsJSON = JSON.stringify(je);
+      this.eventsJSON = JSON.stringify(eventsArray);
       console.log(this.eventsJSON);
     }
   },

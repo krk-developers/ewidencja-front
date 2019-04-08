@@ -6,6 +6,7 @@
       <label for="login-pass">hasło</label>
       <input id="login-pass" type="password" v-model="pass">
       <button type="submit">Zaloguj</button>
+      <p>kliknij "Zaloguj"</p>
     </form>
   </div>
 </template>
@@ -59,6 +60,11 @@ export default {
 
       button{
         padding: 10px 20px;
+      }
+
+      p{
+        text-align: center;
+        margin-top: 10px;
       }
     }
   }
