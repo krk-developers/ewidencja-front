@@ -1,0 +1,13 @@
+
+@mixin flexRow($arg1: center, $arg2: center){
+  display: flex;
+  justify-content: $arg1;
+  align-items: $arg2;
+}
+
+@mixin flexColumn($arg1: center, $arg2: center){
+  display: flex;
+  flex-direction: column;
+  justify-content: $arg1;
+  align-items: $arg2;
+}

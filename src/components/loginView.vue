@@ -34,14 +34,13 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import "../sass/flexMixins.scss";
 
   .login-container{
+    @include flexRow;
     width: 100vw;
     height: 100vh;
     background: gray;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 
     form{
       width: 200px;

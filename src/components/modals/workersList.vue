@@ -16,7 +16,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import "../../sass/flexMixins.scss";
+
 .workers-list-modal{
+  @include flexRow;
   position: fixed;
   left: 0;
   top: 0;
@@ -24,9 +27,6 @@ export default {
   width: 100vw;
   height: 100vh;
   background: gray;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 
   .close-modal-btn{
     padding: 10px 20px;

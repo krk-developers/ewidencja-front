@@ -1,9 +1,10 @@
 <template>
   <div class="main-container">
     <nav class="nav">
-      <button @click="showEvents">show events</button>
+      <button @click="getEvents">Lista Nieobecności</button>
       <button @click="$store.dispatch('showModal', 'add-event')">Dodaj nieobecność</button>
       <button @click="$store.dispatch('showModal', 'workers-list')">Lista pracowników</button>
+      <button @click="$store.dispatch('showModal', 'add-holiday')">Zaznacz święto</button>
     </nav>
     <div class="calendar-wrapper">
       <div class="calendar" id="calendar"></div>
@@ -11,8 +12,14 @@
     <div v-if="$store.getters.getModalVisible === 'add-event'">
       <new-event v-bind:workers="workers"></new-event>
     </div>
+    <div v-if="$store.getters.getModalVisible === 'events-list'">
+      <events-list v-bind:eventsList="eventsList"></events-list>
+    </div>
     <div v-if="$store.getters.getModalVisible === 'workers-list'">
       <workers-list v-bind:workers="workers"></workers-list>
+    </div>
+    <div v-if="$store.getters.getModalVisible === 'add-holiday'">
+      <new-holiday v-bind:workers="workers"></new-holiday>
     </div>
   </div>
 </template>
@@ -20,8 +27,14 @@
 <script>
 import {eventBus} from '../main.js';
 
-import newEvent from './newEvent.vue';
-import workersList from './workersList.vue';
+import newEvent from './modals/newEvent.vue';
+import eventsList from './modals/eventsList.vue';
+import workersList from './modals/workersList.vue';
+import newHoliday from './modals/newHoliday.vue';
+
+import legendData from '../data/legend.js';
+import * as secretData from '../secretData.js';
+const moment = require('moment');
 
 import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -35,14 +48,15 @@ import '@fullcalendar/list/main.css';
 export default {
   components: {
     'new-event': newEvent,
-    'workers-list': workersList
+    'events-list': eventsList,
+    'workers-list': workersList,
+    'new-holiday': newHoliday
   },
   data(){
     return {
       calendar: false,
-      eventsJSON: false,
-      workers: false,
-      modalVisible: false
+      eventsList: false,
+      workers: false
     }
   },
   methods: {
@@ -63,8 +77,7 @@ export default {
         // weekNumbers: true,
         // weekends: false,
         header: {
-          left: 'listMonth,dayGridMonth',
-          center: 'title',
+          left: 'title',
           right: 'prev,today,next'
         },
         // events: 'https://fullcalendar.io/demo-events.json',
@@ -78,7 +91,10 @@ export default {
           else if(date.getDay() === 0){ return 'Niedziela' }
         },
         eventClick(e){
-          e.event.remove();
+          const confirm = window.confirm('Czy na pewno chcesz usunąć nieobecność?');
+          if(confirm){
+            e.event.remove();
+          }
         },
         // select(e){ console.log(e); }
       });
@@ -86,38 +102,23 @@ export default {
       vue.calendar = calendar;
       calendar.render();
     },
-    getWorkers: function(){
-      // const url = 'https://ewidencja.vipserv.org/backend/public/api/workers';
-      // this.$http.get(url
-      // , {headers:{
-      //   'Origin': 'https://ewidencja.vipserv.org'
-      //   }}
-      //   ).then(res => {
-      //     console.log(res.bodyText);
-      //     return res.body;
-      //   })
-      //   .then(res => {console.log(res)});
+    getLegend(){
+      // this.$http.get('https://ewidencja.vipserv.org/backend/public/api/legends')
+      //   .then(res => {
+      //     console.log(res);
+      //   });
 
-      const workersJSON = '{"data":[{"id":4,"name":"Jan","lastname":"Kowalski","email":"janek@onet.pl","pesel":62040404835,"role_display_name":"Pracownik"},{"id":5,"name":"Jan","lastname":"Kowalski","email":"kowal@wp.pl","pesel":74030704836,"role_display_name":"Pracownik"},{"id":6,"name":"Edward","lastname":"Nowak","email":"nowak@o2.pl","pesel":995030704555,"role_display_name":"Pracownik"}]}';
+      const legend = legendData;
 
-      this.workers = JSON.parse(workersJSON).data;
+      this.$store.dispatch('setLegend', legend.data);
     },
-    addEvent(data){
-      data.id = new Date().getTime();
-      data.allDay = true;
-
-      const worker = this.workers.find((w) => {
-        if(w.pesel == data.pesel){
-          return w;
-        }
-      });
-
-      data.title = `${data.type} - ${worker.name} ${worker.lastname} (${worker.pesel})`;
-
-      // console.log(data);
-      this.calendar.addEvent(data);
+    getWorkers(){
+      const url = secretData.getWorkers;
+      this.$http.get(url)
+        .then(res => { this.workers = res.body.data })
+        .catch(err => { console.log(err); });
     },
-    showEvents(){
+    getEvents(){
       const events = this.calendar.getEvents();
       const eventsArray = [];
       // console.log(events);
@@ -126,21 +127,25 @@ export default {
         eventsArray.push({
           id: e.id,
           title: e.title,
-          start: e.start,
-          end: e.end,
-          allDay: true
+          start: moment(e.start).format('DD-MM-YYYY'),
+          end: moment(e.end).format('DD-MM-YYYY'),
+          allDay: true,
+          extendedProps: e.extendedProps
         });
       });
 
-      this.eventsJSON = JSON.stringify(eventsArray);
-      console.log(this.eventsJSON);
+      this.eventsList = eventsArray;
+      console.log(eventsArray);
+
+      this.$store.dispatch('showModal', 'events-list');
     }
   },
   created(){
     this.getWorkers();
+    this.getLegend();
 
     eventBus.$on('addEvent', (data) => {
-      this.addEvent(data);
+      this.calendar.addEvent(data);
     });
   },
   mounted(){
@@ -150,13 +155,12 @@ export default {
 </script>
 
 <style lang="scss">
+@import "../sass/flexMixins.scss";
 
 .nav{
+  @include flexRow;
   background: lightblue;
   height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   margin-bottom: 5px;
 
   button{
