@@ -1,7 +1,7 @@
 <template>
   <div class="main-container">
     <nav class="nav">
-      <button @click="getEvents">Lista Nieobecności</button>
+      <button @click="$store.dispatch('showModal', 'events-list')">Lista Nieobecności</button>
       <button @click="$store.dispatch('showModal', 'add-event')">Dodaj nieobecność</button>
       <button @click="$store.dispatch('showModal', 'workers-list')">Lista pracowników</button>
       <button @click="$store.dispatch('showModal', 'add-holiday')">Zaznacz święto</button>
@@ -10,22 +10,31 @@
       <div class="calendar" id="calendar"></div>
     </div>
     <div v-if="$store.getters.getModalVisible === 'add-event'">
-      <new-event v-bind:workers="workers"></new-event>
+      <new-event></new-event>
     </div>
     <div v-if="$store.getters.getModalVisible === 'events-list'">
-      <events-list v-bind:eventsList="eventsList"></events-list>
+      <events-list></events-list>
     </div>
     <div v-if="$store.getters.getModalVisible === 'workers-list'">
-      <workers-list v-bind:workers="workers"></workers-list>
+      <workers-list></workers-list>
     </div>
     <div v-if="$store.getters.getModalVisible === 'add-holiday'">
-      <new-holiday v-bind:workers="workers"></new-holiday>
+      <new-holiday></new-holiday>
     </div>
   </div>
 </template>
 
 <script>
+import { Calendar } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import listPlugin from '@fullcalendar/list';
+import '@fullcalendar/core/main.css';
+import '@fullcalendar/daygrid/main.css';
+import '@fullcalendar/list/main.css';
+
 import {eventBus} from '../main.js';
+const moment = require('moment');
 
 import newEvent from './modals/newEvent.vue';
 import eventsList from './modals/eventsList.vue';
@@ -33,17 +42,8 @@ import workersList from './modals/workersList.vue';
 import newHoliday from './modals/newHoliday.vue';
 
 import legendData from '../data/legend.js';
-import * as secretData from '../secretData.js';
-const moment = require('moment');
+// import * as secretData from '../secretData.js';
 
-import { Calendar } from '@fullcalendar/core';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction';
-import listPlugin from '@fullcalendar/list';
-
-import '@fullcalendar/core/main.css';
-import '@fullcalendar/daygrid/main.css';
-import '@fullcalendar/list/main.css';
 
 export default {
   components: {
@@ -54,9 +54,7 @@ export default {
   },
   data(){
     return {
-      calendar: false,
-      eventsList: false,
-      workers: false
+      calendar: null
     }
   },
   methods: {
@@ -64,7 +62,7 @@ export default {
       const vue = this;
       const calendarEl = document.getElementById('calendar');
 
-      const calendar = new Calendar(calendarEl, {
+      this.calendar = new Calendar(calendarEl, {
         plugins: [ dayGridPlugin, interactionPlugin, listPlugin ],
         defaultView: 'dayGridMonth',
         locale: 'pl',
@@ -80,7 +78,9 @@ export default {
           left: 'title',
           right: 'prev,today,next'
         },
-        // events: 'https://fullcalendar.io/demo-events.json',
+        events(info, successCallback, failureCallback){
+          successCallback(vue.$store.getters.getEvents);
+        },
         columnHeaderText(date){
           if(date.getDay() === 1){ return 'Poniedziałek' }
           else if(date.getDay() === 2){ return 'Wtorek' }
@@ -94,13 +94,25 @@ export default {
           const confirm = window.confirm('Czy na pewno chcesz usunąć nieobecność?');
           if(confirm){
             e.event.remove();
+            vue.$store.dispatch('sendEvents', vue.calendar.getEvents());
           }
         },
+        eventPositioned(e){
+          // console.log(e);
+          if(e.event.extendedProps.grandType === 'holiday'){
+            e.el.classList.add('holiday-event');
+          }
+
+          const start = moment(e.event.start).format('DD-MM-YYYY');
+          const end = moment(e.event.end).format('DD-MM-YYYY');
+          const title = `${e.event.title} // ${start} - ${end}`;
+          e.el.setAttribute('title', title);
+        }
         // select(e){ console.log(e); }
       });
 
-      vue.calendar = calendar;
-      calendar.render();
+      this.calendar.render();
+      this.$store.dispatch('setCalendar', this.calendar);
     },
     getLegend(){
       // this.$http.get('https://ewidencja.vipserv.org/backend/public/api/legends')
@@ -113,40 +125,21 @@ export default {
       this.$store.dispatch('setLegend', legend.data);
     },
     getWorkers(){
-      const url = secretData.getWorkers;
-      this.$http.get(url)
-        .then(res => { this.workers = res.body.data })
-        .catch(err => { console.log(err); });
-    },
-    getEvents(){
-      const events = this.calendar.getEvents();
-      const eventsArray = [];
-      // console.log(events);
-      events.forEach((e) => {
-        // console.log(e.id);
-        eventsArray.push({
-          id: e.id,
-          title: e.title,
-          start: moment(e.start).format('DD-MM-YYYY'),
-          end: moment(e.end).format('DD-MM-YYYY'),
-          allDay: true,
-          extendedProps: e.extendedProps
-        });
-      });
+      // const url = secretData.getWorkers;
+      // this.$http.get(url)
+      // .then(res => { this.workers = res.body.data })
+      // .catch(err => { console.log(err); });
+      
+      const u = '{"data":[{"id":6,"name":"Jan","lastname":"Kowalski","email":"janek@onet.pl","pesel":763445637456,"role_display_name":"Pracownik"},{"id":7,"name":"Jan","lastname":"Kowalski","email":"kowal@wp.pl","pesel":74030704836,"role_display_name":"Pracownik"},{"id":8,"name":"Edward","lastname":"Nowak","email":"nowak@o2.pl","pesel":995030704555,"role_display_name":"Pracownik"}]}';
+      const workers = JSON.parse(u).data;
 
-      this.eventsList = eventsArray;
-      console.log(eventsArray);
-
-      this.$store.dispatch('showModal', 'events-list');
+      this.$store.dispatch('fetchWorkers', workers);
     }
   },
   created(){
     this.getWorkers();
     this.getLegend();
-
-    eventBus.$on('addEvent', (data) => {
-      this.calendar.addEvent(data);
-    });
+    this.$store.dispatch('runFirebase');
   },
   mounted(){
     this.runCalendar();
@@ -177,6 +170,11 @@ export default {
 
     .fc-content{
       cursor: pointer;
+    }
+
+    .holiday-event{
+      background: red;
+      border: 1px solid red;
     }
   }
 }

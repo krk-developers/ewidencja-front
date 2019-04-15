@@ -26,9 +26,9 @@
 import {eventBus} from '../../main.js';
 
 export default {
-  props: ['workers'],
   data(){
     return {
+      workers: this.$store.getters.getWorkers,
       legend: null,
       ePesel: null,
       eType: null,
@@ -44,7 +44,8 @@ export default {
         pesel: this.ePesel,
         type: this.eType,
         start: this.eStart,
-        type: 'leave'
+        classNames: ['leave-event'],
+        grandType: 'leave'
       };
 
       const worker = this.workers.find((w) => {
@@ -59,12 +60,13 @@ export default {
         .then(res => {
           newEvent.end = res;
 
-          eventBus.$emit('addEvent', newEvent);
+          // eventBus.$emit('addEvent', newEvent);
+          this.$store.dispatch('addEvent', newEvent);
           this.$store.dispatch('hideModal');
       });
     }
   },
-  beforeMount(){
+  created(){
     this.legend = this.$store.getters.getLegendLeave;
   }
 }

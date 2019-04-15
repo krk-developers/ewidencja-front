@@ -11,7 +11,11 @@
 
 <script>
 export default {
-  props: ['workers']
+  data(){
+    return {
+      workers: this.$store.getters.getWorkers,
+    }
+  }
 }
 </script>
 

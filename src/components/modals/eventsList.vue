@@ -2,7 +2,7 @@
   <div class="events-list-modal">
     <button class='close-modal-btn' @click="$store.dispatch('hideModal')">X</button>
     <ul>
-      <li v-for="event in eventsList" :key="event.id">{{event.title}} | od: {{event.start}} do: {{event.end}}</li>
+      <li v-for="event in leaveEvents" :key="event.id">{{event.title}} | od: {{event.start}} do: {{event.end}}</li>
     </ul>
   </div>
 </template>
@@ -11,7 +11,15 @@
 // import {eventBus} from '../../main.js';
 
 export default {
-  props: ['eventsList']
+  data(){
+    return {
+      leaveEvents: []
+    }
+  },
+  beforeMount(){
+    const events = this.$store.getters.getEvents;
+    this.leaveEvents = events.filter(e => e.extendedProps.grandType === 'leave');
+  }
 }
 </script>
 

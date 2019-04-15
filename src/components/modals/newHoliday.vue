@@ -31,17 +31,17 @@ export default {
         id: new Date().getTime(),
         title: this.eName,
         start: this.eStart,
-        color: 'red',
-        type: 'holiday'
+        grandType: 'holiday'
       };
 
-    this.$store.dispatch('fixEndDate', this.eEnd)
-    .then(res => {
-      newHoliday.end = res;
+      this.$store.dispatch('fixEndDate', this.eEnd)
+      .then(res => {
+        newHoliday.end = res;
 
-      eventBus.$emit('addEvent', newHoliday);
-      this.$store.dispatch('hideModal');
-    });
+        // eventBus.$emit('addEvent', newHoliday);
+        this.$store.dispatch('addEvent', newHoliday);
+        this.$store.dispatch('hideModal');
+      });
     }
   }
 }
