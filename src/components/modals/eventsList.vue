@@ -1,6 +1,10 @@
 <template>
   <div class="events-list-modal">
     <button class='close-modal-btn' @click="$store.dispatch('hideModal')">X</button>
+    <form class="search-event--form">
+      <label for="search-event--input">Wpisz imię i nazwisko</label>
+      <input type="text" id="search-event--input" v-model="workerName">
+    </form>
     <ul>
       <li v-for="event in leaveEvents" :key="event.id">{{event.title}} | od: {{event.start}} do: {{event.end}}</li>
     </ul>
@@ -13,12 +17,20 @@
 export default {
   data(){
     return {
-      leaveEvents: []
+      leaveEvents: this.$store.getters.getEvents.filter(e => e.extendedProps.grandType === 'leave'),
+      workerName: ''
     }
   },
-  beforeMount(){
-    const events = this.$store.getters.getEvents;
-    this.leaveEvents = events.filter(e => e.extendedProps.grandType === 'leave');
+  watch: {
+    workerName(text){
+      const pattern = new RegExp(text, 'i');
+      const allEvents = this.$store.getters.getEvents.filter(e => e.extendedProps.grandType === 'leave');
+      this.leaveEvents = allEvents.filter(i => {
+        if(pattern.test(i.title)){
+          return i;
+        }
+      });
+    }
   }
 }
 </script>
@@ -42,6 +54,11 @@ export default {
     position: fixed;
     top: 10px;
     right: 10px;
+  }
+
+  .search-event--form{
+    @include flexColumn;
+    margin-bottom: 20px;
   }
 }
 
