@@ -1,9 +1,9 @@
 <template>
   <div class="main-container">
     <nav class="nav">
+      <button @click="$store.dispatch('showModal', 'workers-list')">Lista pracowników</button>
       <button @click="$store.dispatch('showModal', 'events-list')">Lista Nieobecności</button>
       <button @click="$store.dispatch('showModal', 'add-event')">Dodaj nieobecność</button>
-      <button @click="$store.dispatch('showModal', 'workers-list')">Lista pracowników</button>
       <button @click="$store.dispatch('showModal', 'add-holiday')">Zaznacz święto</button>
     </nav>
     <div class="calendar-wrapper">
@@ -41,7 +41,6 @@ import eventsList from './modals/eventsList.vue';
 import workersList from './modals/workersList.vue';
 import newHoliday from './modals/newHoliday.vue';
 
-import legendData from '../data/legend.js';
 // import * as secretData from '../secretData.js';
 
 
@@ -105,7 +104,7 @@ export default {
 
           const start = moment(e.event.start).format('DD-MM-YYYY');
           const end = moment(e.event.end).format('DD-MM-YYYY');
-          const title = `${e.event.title} // ${start} - ${end}`;
+          const title = `${e.event.title}\n${start}  -  ${end}`;
           e.el.setAttribute('title', title);
         }
         // select(e){ console.log(e); }
@@ -113,32 +112,11 @@ export default {
 
       this.calendar.render();
       this.$store.dispatch('setCalendar', this.calendar);
-    },
-    getLegend(){
-      // this.$http.get('https://ewidencja.vipserv.org/backend/public/api/legends')
-      //   .then(res => {
-      //     console.log(res);
-      //   });
-
-      const legend = legendData;
-
-      this.$store.dispatch('setLegend', legend.data);
-    },
-    getWorkers(){
-      // const url = secretData.getWorkers;
-      // this.$http.get(url)
-      // .then(res => { this.workers = res.body.data })
-      // .catch(err => { console.log(err); });
-      
-      const u = '{"data":[{"id":6,"name":"Jan","lastname":"Kowalski","email":"janek@onet.pl","pesel":763445637456,"role_display_name":"Pracownik"},{"id":7,"name":"Jan","lastname":"Kowalski","email":"kowal@wp.pl","pesel":74030704836,"role_display_name":"Pracownik"},{"id":8,"name":"Edward","lastname":"Nowak","email":"nowak@o2.pl","pesel":995030704555,"role_display_name":"Pracownik"}]}';
-      const workers = JSON.parse(u).data;
-
-      this.$store.dispatch('fetchWorkers', workers);
     }
   },
   created(){
-    this.getWorkers();
-    this.getLegend();
+    this.$store.dispatch('fetchWorkers', this);
+    this.$store.dispatch('fetchLegend', this);
     this.$store.dispatch('runFirebase');
   },
   mounted(){
