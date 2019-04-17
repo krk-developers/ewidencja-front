@@ -90,7 +90,7 @@ export default {
           else if(date.getDay() === 0){ return 'Niedziela' }
         },
         eventClick(e){
-          const confirm = window.confirm('Czy na pewno chcesz usunąć nieobecność?');
+          const confirm = window.confirm(`Czy na pewno chcesz usunąć nieobecność\n${e.event.title}?`);
           if(confirm){
             e.event.remove();
             vue.$store.dispatch('sendEvents', vue.calendar.getEvents());
