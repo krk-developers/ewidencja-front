@@ -4,7 +4,7 @@
     <form @submit.prevent="addEvent">
       <label for="worker">Pracownik</label>
       <select class="mb" id="worker" v-model="ePesel" required>
-        <option v-for="worker in workers" :key="worker.pesel" :value="worker.pesel">{{worker.name}} {{worker.lastname}} ({{worker.pesel}})</option>
+        <option v-for="worker in workers" :key="worker.pesel" :value="worker.pesel">{{worker.firstname}} {{worker.lastname}} ({{worker.pesel}})</option>
       </select>
       <label for="type">Typ nieobecności</label>
       <select class="mb" id="type" v-model="eType" required>

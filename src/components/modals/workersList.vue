@@ -7,7 +7,7 @@
     </form>
     <ul>
       <li v-for="worker in workers" :key="worker.pesel">
-        {{worker.name}} {{worker.lastname}}, pesel: {{worker.pesel}}, email: {{worker.email}}
+        {{worker.firstname}} {{worker.lastname}}, pesel: {{worker.pesel}}, email: {{worker.email}}
       </li>
     </ul>
   </div>

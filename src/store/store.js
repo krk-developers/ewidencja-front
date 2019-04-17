@@ -89,14 +89,14 @@ export const store = new Vuex.Store({
       context.commit('setLegendLeave', legendLeave);
     },
     fetchWorkers(context, vue){
-      // const url = secretData.getWorkers;
-      // vue.$http.get(url)
-      // .then(res => { context.commit('setWorkers', res.body.data) })
-      // .catch(err => { console.log(err); });
+      const url = secretData.getWorkers;
+      vue.$http.get(url)
+      .then(res => { context.commit('setWorkers', res.body.data) })
+      .catch(err => { console.log(err); });
 
-      const u = '{"data":[{"id":6,"name":"Jan","lastname":"Kowalski","email":"janek@onet.pl","pesel":763445637456,"role_display_name":"Pracownik"},{"id":7,"name":"Jan","lastname":"Kowalski","email":"kowal@wp.pl","pesel":74030704836,"role_display_name":"Pracownik"},{"id":8,"name":"Edward","lastname":"Nowak","email":"nowak@o2.pl","pesel":995030704555,"role_display_name":"Pracownik"}]}';
-      const workers = JSON.parse(u).data;
-      context.commit('setWorkers', workers);
+      // const u = '{"data":[{"id":6,"name":"Jan","lastname":"Bąkowski","email":"janek@onet.pl","pesel":763445637456,"role_display_name":"Pracownik"},{"id":7,"name":"Jan","lastname":"Kowalski","email":"kowal@wp.pl","pesel":74030704836,"role_display_name":"Pracownik"},{"id":8,"name":"Edward","lastname":"Nowak","email":"nowak@o2.pl","pesel":995030704555,"role_display_name":"Pracownik"}]}';
+      // const workers = JSON.parse(u).data;
+      // context.commit('setWorkers', workers);
     },
     fetchLegend(context, vue){
       // vue.$http.get('https://ewidencja.vipserv.org/backend/public/api/legends')
