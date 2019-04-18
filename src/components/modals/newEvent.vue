@@ -3,12 +3,12 @@
     <button class='close-modal-btn' @click="$store.dispatch('hideModal')">X</button>
     <form @submit.prevent="addEvent">
       <label for="worker">Pracownik</label>
-      <select class="mb" id="worker" v-model="ePesel" required>
-        <option v-for="worker in workers" :key="worker.pesel" :value="worker.pesel">{{worker.firstname}} {{worker.lastname}} ({{worker.pesel}})</option>
+      <select class="mb" id="worker" v-model="eWorkerId" required>
+        <option v-for="worker in workers" :key="worker.id" :value="worker.id">{{worker.firstname}} {{worker.lastname}} ({{worker.pesel}})</option>
       </select>
       <label for="type">Typ nieobecności</label>
-      <select class="mb" id="type" v-model="eType" required>
-        <option v-for="i in legend" :key="i.id" :value="i.name">{{i.name}}</option>
+      <select class="mb" id="type" v-model="legendId" required>
+        <option v-for="i in legend" :key="i.id" :value="i.id">{{i.name}}</option>
       </select>
       <label for="eStart">Dzień rozpoczęcia</label>
       <input class="mb" id="eStart" type="date" v-model="eStart" required>
@@ -29,9 +29,9 @@ export default {
   data(){
     return {
       workers: this.$store.getters.getWorkers,
-      legend: null,
-      ePesel: null,
-      eType: null,
+      legend: this.$store.getters.getLegendLeave,
+      eWorkerId: null,
+      legendId: null,
       eStart: null,
       eEnd: null
     }
@@ -40,21 +40,28 @@ export default {
     addEvent(){
       const newEvent = {
         allDay: true,
-        id: new Date().getTime(),
-        pesel: this.ePesel,
-        type: this.eType,
+        workerId: this.eWorkerId,
         start: this.eStart,
-        classNames: ['leave-event'],
-        grandType: 'leave'
+        // classNames: ['leave-event'],
+        // grandType: 'leave'
       };
 
-      const worker = this.workers.find((w) => {
-        if(w.pesel == newEvent.pesel){
+      // console.log(this.legend);
+
+      const legendElem = this.legend.find(i => {
+        if(i.id == this.legendId){
+          return i;
+        }
+      });
+      newEvent.legendId = legendElem.id;
+
+      const worker = this.workers.find(w => {
+        if(w.id == newEvent.workerId){
           return w;
         }
       });
 
-      newEvent.title = `${newEvent.type} - ${worker.name} ${worker.lastname} (${worker.pesel})`;
+      newEvent.title = `${legendElem.name} - ${worker.firstname} ${worker.lastname} (${worker.pesel})`;
 
       this.$store.dispatch('fixEndDate', this.eEnd)
         .then(res => {
@@ -67,7 +74,7 @@ export default {
     }
   },
   created(){
-    this.legend = this.$store.getters.getLegendLeave;
+    // this.legend = this.$store.getters.getLegendLeave;
   }
 }
 </script>

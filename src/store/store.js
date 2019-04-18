@@ -94,10 +94,10 @@ export const store = new Vuex.Store({
       context.commit('hideModal');
     },
     setLegend(context, data){
-      const legendHoliday = data.filter(i => i.type === 'holiday');
+      const legendHoliday = data.filter(i => i.working_day === 0);
       context.commit('setLegendHoliday', legendHoliday);
 
-      const legendLeave = data.filter(i => i.type === 'leave');
+      const legendLeave = data.filter(i => i.working_day === 1);
       context.commit('setLegendLeave', legendLeave);
     },
     fetchWorkers(context){
@@ -111,14 +111,14 @@ export const store = new Vuex.Store({
       // context.commit('setWorkers', workers);
     },
     fetchLegend(context){
-      // context.state.vue.$http.get('https://ewidencja.vipserv.org/backend/public/api/legends')
-      // .then(res => {
-      //   console.log(res);
-      //   context.dispatch('setLegend', res.body.data);
-      // });
+      context.state.vue.$http.get(secretData.getLegend)
+      .then(res => {
+        // console.log(res);
+        context.dispatch('setLegend', res.body.data);
+      });
 
-      const legend = legendData;
-      context.dispatch('setLegend', legend.data);
+      // const legend = legendData;
+      // context.dispatch('setLegend', legend.data);
     },
     fixEndDate(context, endDate){
       const daysInMonth = moment(endDate.slice(0, 7), 'YYYY-MM').daysInMonth();
@@ -175,6 +175,7 @@ export const store = new Vuex.Store({
 
       context.state.vue.$http.get(secretData.getEvents)
       .then(res => {
+        console.log(res.body.data);
           context.commit('setEvents', res.body.data);
           context.state.calendar.refetchEvents();
       })
@@ -196,12 +197,26 @@ export const store = new Vuex.Store({
       const data = {data: eventsArray};
       firebase.database().ref('events').set(JSON.stringify(data));
     },
-    addEvent(context, event){
+    addEvent(context, newEvent){
       const calendar = context.state.calendar;
-      calendar.addEvent(event);
-      const events = calendar.getEvents();
+      calendar.addEvent(newEvent);
+      // const events = calendar.getEvents();
       // console.log(events);
-      context.dispatch('sendEvents', events);
+      context.dispatch('sendEvent', newEvent);
+    },
+    sendEvent(context, newEvent){
+      console.log(newEvent);
+      const formatedEvent = {
+        start: newEvent.start,
+        end: newEvent.end,
+        worker_id: newEvent.workerId,
+        legend_id: newEvent.legendId,
+        title: newEvent.title
+      };
+
+      context.state.vue.$http.post(secretData.postEvent, formatedEvent)
+      .then(res => { console.log(res); })
+      .catch(err => { console.log(err); });
     }
   }
 });
