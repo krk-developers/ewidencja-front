@@ -17,7 +17,9 @@ export const store = new Vuex.Store({
     legendHoliday: [],
     legendLeave: [],
     eventsArray: [],
-    workersArray: []
+    workersArray: [],
+    adminsArray: [{id: 1, firstname: 'Mariola', lastname: 'Honkisz', pesel: 84675675647567, email: 'mariola@test.pl'}],
+    superAdminsArray: [{id: 1, firstname: 'Monika', lastname: 'Hołymczuk', pesel: 25432634554, email: 'monikaholymczuk@test.pl'}]
   },
   // ----- getters -------------------------
   getters: {
@@ -41,6 +43,12 @@ export const store = new Vuex.Store({
     },
     getWorkers(state){
       return state.workersArray;
+    },
+    getAdmins(state){
+      return state.adminsArray;
+    },
+    getSuperAdmins(state){
+      return state.superAdminsArray;
     }
   },
   // ----- mutations -------------------------

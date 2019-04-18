@@ -70,7 +70,7 @@ export default {
       const pattern = new RegExp(text, 'i');
       const allWorkers = this.$store.getters.getWorkers;
       this.workers = allWorkers.filter(i => {
-        if(pattern.test(`${i.name} ${i.lastname}`)){
+        if(pattern.test(`${i.firstname} ${i.lastname}`)){
           return i;
         }
       });
@@ -83,7 +83,7 @@ export default {
 @import "../../sass/flexMixins.scss";
 
 .workers-list-modal{
-  @include flexColumn(start, center);
+  @include flexColumn(flex-start, center);
   position: fixed;
   left: 0;
   top: 0;

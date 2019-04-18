@@ -1,6 +1,8 @@
 <template>
   <div class="main-container">
     <nav class="nav">
+      <button @click="$store.dispatch('showModal', 'sadmins-list')">Lista superadminów</button>
+      <button @click="$store.dispatch('showModal', 'admins-list')">Lista adminów</button>
       <button @click="$store.dispatch('showModal', 'workers-list')">Lista pracowników</button>
       <button @click="$store.dispatch('showModal', 'events-list')">Lista Nieobecności</button>
       <button @click="$store.dispatch('showModal', 'add-event')">Dodaj nieobecność</button>
@@ -15,11 +17,17 @@
     <div v-if="$store.getters.getModalVisible === 'events-list'">
       <events-list></events-list>
     </div>
+    <div v-if="$store.getters.getModalVisible === 'add-holiday'">
+      <new-holiday></new-holiday>
+    </div>
     <div v-if="$store.getters.getModalVisible === 'workers-list'">
       <workers-list></workers-list>
     </div>
-    <div v-if="$store.getters.getModalVisible === 'add-holiday'">
-      <new-holiday></new-holiday>
+    <div v-if="$store.getters.getModalVisible === 'admins-list'">
+      <admins-list></admins-list>
+    </div>
+    <div v-if="$store.getters.getModalVisible === 'sadmins-list'">
+      <superadmins-list></superadmins-list>
     </div>
   </div>
 </template>
@@ -38,8 +46,10 @@ const moment = require('moment');
 
 import newEvent from './modals/newEvent.vue';
 import eventsList from './modals/eventsList.vue';
-import workersList from './modals/workersList.vue';
 import newHoliday from './modals/newHoliday.vue';
+import workersList from './modals/workersList.vue';
+import adminsList from './modals/adminsList.vue';
+import superadminsList from './modals/superadminsList.vue';
 
 // import * as secretData from '../secretData.js';
 
@@ -48,12 +58,15 @@ export default {
   components: {
     'new-event': newEvent,
     'events-list': eventsList,
+    'new-holiday': newHoliday,
     'workers-list': workersList,
-    'new-holiday': newHoliday
+    'admins-list': adminsList,
+    'superadmins-list': superadminsList
   },
   data(){
     return {
-      calendar: null
+      calendar: null,
+      superAdmin: true
     }
   },
   methods: {
