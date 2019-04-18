@@ -128,8 +128,9 @@ export default {
     }
   },
   created(){
-    this.$store.dispatch('fetchWorkers', this);
-    this.$store.dispatch('fetchLegend', this);
+    this.$store.dispatch('setVue', this);
+    this.$store.dispatch('fetchWorkers');
+    this.$store.dispatch('fetchLegend');
     this.$store.dispatch('runFirebase');
   },
   mounted(){

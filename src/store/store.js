@@ -14,6 +14,7 @@ export const store = new Vuex.Store({
     logged: true,
     modalVisible: false,
     calendar: null,
+    vue: null,
     legendHoliday: [],
     legendLeave: [],
     eventsArray: [],
@@ -65,6 +66,9 @@ export const store = new Vuex.Store({
     hideModal(state){
       state.modalVisible = false;
     },
+    setVue(state, vue){
+      state.vue = vue;
+    },
     setLegendHoliday(state, data){
       state.legendHoliday = data;
     },
@@ -96,9 +100,9 @@ export const store = new Vuex.Store({
       const legendLeave = data.filter(i => i.type === 'leave');
       context.commit('setLegendLeave', legendLeave);
     },
-    fetchWorkers(context, vue){
+    fetchWorkers(context){
       const url = secretData.getWorkers;
-      vue.$http.get(url)
+      context.state.vue.$http.get(url)
       .then(res => { context.commit('setWorkers', res.body.data) })
       .catch(err => { console.log(err); });
 
@@ -106,8 +110,8 @@ export const store = new Vuex.Store({
       // const workers = JSON.parse(u).data;
       // context.commit('setWorkers', workers);
     },
-    fetchLegend(context, vue){
-      // vue.$http.get('https://ewidencja.vipserv.org/backend/public/api/legends')
+    fetchLegend(context){
+      // context.state.vue.$http.get('https://ewidencja.vipserv.org/backend/public/api/legends')
       // .then(res => {
       //   console.log(res);
       //   context.dispatch('setLegend', res.body.data);
@@ -150,6 +154,9 @@ export const store = new Vuex.Store({
       const fixedEnd = `${endYear}-${endMonth}-${endDay}`;
       return fixedEnd;
     },
+    setVue(context, vue){
+      context.commit('setVue', vue);
+    },
     setCalendar(context, calendar){
       context.commit('setCalendar', calendar);
     },
@@ -158,13 +165,19 @@ export const store = new Vuex.Store({
       context.dispatch('fetchEvents');
     },
     fetchEvents(context){
-      firebase.database().ref('events')
-      .once('value', (res) => {
-        // console.log('fetched from firebase');
-        const events = JSON.parse(res.node_.value_);
-        context.commit('setEvents', events.data);
-        context.state.calendar.refetchEvents();
-      });
+      // firebase.database().ref('events')
+      // .once('value', (res) => {
+      //   // console.log('fetched from firebase');
+      //   const events = JSON.parse(res.node_.value_);
+      //   context.commit('setEvents', events.data);
+      //   context.state.calendar.refetchEvents();
+      // });
+
+      context.state.vue.$http.get(secretData.getEvents)
+      .then(res => {
+          context.commit('setEvents', res.body.data);
+          context.state.calendar.refetchEvents();
+      })
     },
     sendEvents(context, events){
       const eventsArray = [];
