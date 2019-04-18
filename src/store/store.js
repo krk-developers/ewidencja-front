@@ -175,9 +175,9 @@ export const store = new Vuex.Store({
 
       context.state.vue.$http.get(secretData.getEvents)
       .then(res => {
-        console.log(res.body.data);
-          context.commit('setEvents', res.body.data);
-          context.state.calendar.refetchEvents();
+        // console.log(res.body.data);
+        context.commit('setEvents', res.body.data);
+        context.state.calendar.refetchEvents();
       })
     },
     sendEvents(context, events){
@@ -215,7 +215,17 @@ export const store = new Vuex.Store({
       };
 
       context.state.vue.$http.post(secretData.postEvent, formatedEvent)
-      .then(res => { console.log(res); })
+      .then(res => {
+      //  console.log(res); 
+      })
+      .catch(err => { console.log(err); });
+    },
+    deleteEvent(context, id){
+      const url = secretData.deleteEvent + id;
+      context.state.vue.$http.delete(url)
+      .then(res => {
+        // console.log(res);
+      })
       .catch(err => { console.log(err); });
     }
   }
