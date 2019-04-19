@@ -67,17 +67,10 @@ export default {
         .then(res => {
           newEvent.end = res;
 
-          // eventBus.$emit('addEvent', newEvent);
           this.$store.dispatch('addEvent', newEvent);
           this.$store.dispatch('hideModal');
       });
-
-      // this.$store.dispatch('addEvent', newEvent);
-      // this.$store.dispatch('hideModal');
     }
-  },
-  created(){
-    // this.legend = this.$store.getters.getLegendLeave;
   }
 }
 </script>

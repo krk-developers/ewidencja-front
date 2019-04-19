@@ -135,6 +135,13 @@ export default {
           if(e.event.extendedProps.legend_name === 'DZUW'){
             e.el.classList.add('event-holiday');
           }
+
+          if(e.isStart && !e.isEnd){
+            e.el.classList.add('event-start');
+          }
+          if(!e.isStart && e.isEnd){
+            e.el.classList.add('event-end');
+          }
         }
         // select(e){ console.log(e); }
       });
@@ -218,6 +225,13 @@ export default {
     .event-holiday{
       background: red;
       border: 1px solid red;
+    }
+
+    .event-start{
+      border-right: 3px solid rgb(54, 235, 54);
+    }
+    .event-end{
+      border-left: 3px solid rgb(54, 235, 54);
     }
 
   }
