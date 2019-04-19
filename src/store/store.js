@@ -4,9 +4,6 @@ import Vuex from 'vuex';
 const moment = require('moment');
 import * as secretData from '../secretData.js';
 
-import {eventBus} from '../main.js';
-import legendData from '../data/legend.js';
-
 Vue.use(Vuex);
 
 export const store = new Vuex.Store({
@@ -161,8 +158,8 @@ export const store = new Vuex.Store({
       context.commit('setCalendar', calendar);
     },
     runFirebase(context){
-      firebase.initializeApp(secretData.firebaseConfig);
-      context.dispatch('fetchEvents');
+      // firebase.initializeApp(secretData.firebaseConfig);
+      // context.dispatch('fetchEvents');
     },
     fetchEvents(context){
       // firebase.database().ref('events')
@@ -175,9 +172,20 @@ export const store = new Vuex.Store({
 
       context.state.vue.$http.get(secretData.getEvents)
       .then(res => {
-        // console.log(res.body.data);
-        context.commit('setEvents', res.body.data);
-        context.state.calendar.refetchEvents();
+        const events = res.body.data;
+        // console.log(events);
+        // context.commit('setEvents', res.body.data);
+        // context.state.calendar.refetchEvents();
+
+        context.state.vue.$http.get(secretData.getHolidays)
+        .then(res => {
+          const holidays = res.body.data;
+          events.push(...holidays);
+          // console.log(events);
+          context.commit('setEvents', events);
+          context.state.calendar.refetchEvents();
+        });
+
       })
     },
     sendEvents(context, events){
@@ -195,7 +203,7 @@ export const store = new Vuex.Store({
       });
 
       const data = {data: eventsArray};
-      firebase.database().ref('events').set(JSON.stringify(data));
+      // firebase.database().ref('events').set(JSON.stringify(data));
     },
     addEvent(context, newEvent){
       const calendar = context.state.calendar;
@@ -205,7 +213,7 @@ export const store = new Vuex.Store({
       context.dispatch('sendEvent', newEvent);
     },
     sendEvent(context, newEvent){
-      console.log(newEvent);
+      // console.log(newEvent);
       const formatedEvent = {
         start: newEvent.start,
         end: newEvent.end,

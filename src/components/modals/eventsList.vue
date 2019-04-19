@@ -17,14 +17,14 @@
 export default {
   data(){
     return {
-      leaveEvents: this.$store.getters.getEvents.filter(e => e.extendedProps.grandType === 'leave'),
+      leaveEvents: this.$store.getters.getEvents,
       workerName: ''
     }
   },
   watch: {
     workerName(text){
       const pattern = new RegExp(text, 'i');
-      const allEvents = this.$store.getters.getEvents.filter(e => e.extendedProps.grandType === 'leave');
+      const allEvents = this.$store.getters.getEvents;
       this.leaveEvents = allEvents.filter(i => {
         if(pattern.test(i.title)){
           return i;

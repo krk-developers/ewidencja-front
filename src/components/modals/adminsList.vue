@@ -49,7 +49,7 @@ export default {
       }
     },
     addAdmin(){
-      const newSuperAdmin = {
+      const newAdmin = {
         firstname: this.aFirstname,
         lastname: this.aLastname,
         pesel: this.aPesel,

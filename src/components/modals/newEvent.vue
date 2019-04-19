@@ -71,6 +71,9 @@ export default {
           this.$store.dispatch('addEvent', newEvent);
           this.$store.dispatch('hideModal');
       });
+
+      // this.$store.dispatch('addEvent', newEvent);
+      // this.$store.dispatch('hideModal');
     }
   },
   created(){

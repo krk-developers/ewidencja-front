@@ -6,7 +6,7 @@
       <button @click="$store.dispatch('showModal', 'workers-list')">Lista pracowników</button>
       <button @click="$store.dispatch('showModal', 'events-list')">Lista Nieobecności</button>
       <button @click="$store.dispatch('showModal', 'add-event')">Dodaj nieobecność</button>
-      <button @click="$store.dispatch('showModal', 'add-holiday')">Zaznacz święto</button>
+      <!-- <button @click="$store.dispatch('showModal', 'add-holiday')">Zaznacz święto</button> -->
     </nav>
     <div class="calendar-wrapper">
       <div class="calendar" id="calendar"></div>
@@ -41,7 +41,7 @@ import '@fullcalendar/core/main.css';
 import '@fullcalendar/daygrid/main.css';
 import '@fullcalendar/list/main.css';
 
-import {eventBus} from '../main.js';
+// import {eventBus} from '../main.js';
 const moment = require('moment');
 
 import newEvent from './modals/newEvent.vue';
@@ -91,7 +91,12 @@ export default {
           right: 'prev,today,next'
         },
         events(info, successCallback, failureCallback){
-          successCallback(vue.$store.getters.getEvents);
+          if(info){
+            successCallback(vue.$store.getters.getEvents);
+          }
+          else{
+            failureCallback();
+          }
         },
         columnHeaderText(date){
           if(date.getDay() === 1){ return 'Poniedziałek' }
@@ -112,20 +117,64 @@ export default {
         },
         eventPositioned(e){
           // console.log(e);
-          if(e.event.extendedProps.grandType === 'holiday'){
-            e.el.classList.add('holiday-event');
-          }
 
+          // if(e.event.extendedProps.grandType === 'holiday'){
+          //   e.el.classList.add('holiday-event');
+          // }
+          let title = '';
           const start = moment(e.event.start).format('DD-MM-YYYY');
-          const end = moment(e.event.end).format('DD-MM-YYYY');
-          const title = `${e.event.title}\n${start}  -  ${end}`;
+          if(e.event.end){
+            const end = moment(e.event.end).format('YYYY-MM-DD');
+            title = `${e.event.title}\n${start}  -  ${vue.downEndDate(end)}`;
+          }
+          else{
+            title = `${e.event.title}\n${start}`;
+          }
           e.el.setAttribute('title', title);
+
+          if(e.event.extendedProps.legend_name === 'DZUW'){
+            e.el.classList.add('event-holiday');
+          }
         }
         // select(e){ console.log(e); }
       });
 
       this.calendar.render();
       this.$store.dispatch('setCalendar', this.calendar);
+    },
+    downEndDate(endDate){
+      const daysInMonth = moment(endDate.slice(0, 7), 'YYYY-MM').daysInMonth();
+      let endDay = +endDate.slice(8);
+      let endMonth = +endDate.slice(5, 7);
+      let endYear = +endDate.slice(0, 4);
+
+      if(endDay === 1){
+        if(endMonth === 1){
+          endYear--;
+          endMonth = 12;
+          endDay = 31;
+        }
+        else{
+          endMonth--;
+          endDay = daysInMonth;
+        }
+      }
+      else{
+        endDay--;
+      }
+
+      endYear = endYear.toString();
+      endMonth = endMonth.toString();
+      endDay = endDay.toString();
+      if(endMonth.length === 1){
+        endMonth = `0${endMonth}`;
+      }
+      if(endDay.length === 1){
+        endDay = `0${endDay}`;
+      }
+      
+      const fixedEnd = `${endDay}-${endMonth}-${endYear}`;
+      return fixedEnd;
     }
   },
   created(){
@@ -166,10 +215,11 @@ export default {
       cursor: pointer;
     }
 
-    .holiday-event{
+    .event-holiday{
       background: red;
       border: 1px solid red;
     }
+
   }
 }
 
