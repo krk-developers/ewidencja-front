@@ -6,7 +6,7 @@
       <input type="text" id="search-event--input" v-model="workerName">
     </form>
     <ul>
-      <li v-for="event in leaveEvents" :key="event.id">{{event.title}} | od: {{event.start}} do: {{event.end}}</li>
+      <li v-for="event in currentEvents" :key="event.id">{{event.title}} | od: {{event.start}} do: {{event.end}}</li>
     </ul>
   </div>
 </template>
@@ -17,20 +17,29 @@
 export default {
   data(){
     return {
-      leaveEvents: this.$store.getters.getEvents,
+      leaveEvents: [],
+      currentEvents: [],
       workerName: ''
     }
   },
   watch: {
     workerName(text){
       const pattern = new RegExp(text, 'i');
-      const allEvents = this.$store.getters.getEvents;
-      this.leaveEvents = allEvents.filter(i => {
+      this.currentEvents = this.leaveEvents.filter(i => {
         if(pattern.test(i.title)){
           return i;
         }
       });
     }
+  },
+  created(){
+    this.leaveEvents = this.$store.getters.getEvents.filter(e => {
+      if(e.legend_name !== 'DZUW'){
+        return e;
+      }
+    });
+
+    this.currentEvents = this.leaveEvents;
   }
 }
 </script>
