@@ -147,7 +147,7 @@ export default {
       });
 
       this.calendar.render();
-      this.$store.dispatch('setCalendar', this.calendar);
+      this.$store.commit('setCalendar', this.calendar);
     },
     downEndDate(endDate){
       const daysInMonth = moment(endDate.slice(0, 7), 'YYYY-MM').daysInMonth();
@@ -185,11 +185,10 @@ export default {
     }
   },
   created(){
-    this.$store.dispatch('setVue', this);
+    this.$store.commit('setVue', this);
     this.$store.dispatch('fetchWorkers');
     this.$store.dispatch('fetchLegend');
     this.$store.dispatch('fetchEvents');
-    // this.$store.dispatch('runFirebase');
   },
   mounted(){
     this.runCalendar();

@@ -66,6 +66,9 @@ export const store = new Vuex.Store({
     setVue(state, vue){
       state.vue = vue;
     },
+    setLegend(state, data){
+      state.legendLeave = data;
+    },
     setLegendHoliday(state, data){
       state.legendHoliday = data;
     },
@@ -111,7 +114,7 @@ export const store = new Vuex.Store({
       context.state.vue.$http.get(secretData.getLegend)
       .then(res => {
         // console.log(res);
-        context.dispatch('setLegend', res.body.data);
+        context.commit('setLegend', res.body.data);
       });
 
       // const legend = legendData;
@@ -151,37 +154,16 @@ export const store = new Vuex.Store({
       const fixedEnd = `${endYear}-${endMonth}-${endDay}`;
       return fixedEnd;
     },
-    setVue(context, vue){
-      context.commit('setVue', vue);
-    },
-    setCalendar(context, calendar){
-      context.commit('setCalendar', calendar);
-    },
-    runFirebase(context){
-      // firebase.initializeApp(secretData.firebaseConfig);
-      // context.dispatch('fetchEvents');
-    },
     fetchEvents(context){
-      // firebase.database().ref('events')
-      // .once('value', (res) => {
-      //   // console.log('fetched from firebase');
-      //   const events = JSON.parse(res.node_.value_);
-      //   context.commit('setEvents', events.data);
-      //   context.state.calendar.refetchEvents();
-      // });
 
       context.state.vue.$http.get(secretData.getEvents)
       .then(res => {
         const events = res.body.data;
-        // console.log(events);
-        // context.commit('setEvents', res.body.data);
-        // context.state.calendar.refetchEvents();
 
         context.state.vue.$http.get(secretData.getHolidays)
         .then(res => {
           const holidays = res.body.data;
           events.push(...holidays);
-          // console.log(events);
           context.commit('setEvents', events);
           context.state.calendar.refetchEvents();
         });
