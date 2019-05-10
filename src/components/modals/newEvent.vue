@@ -4,7 +4,7 @@
     <form @submit.prevent="addEvent">
       <label for="worker">Pracownik</label>
       <select class="mb" id="worker" v-model="eWorkerId" required>
-        <option v-for="worker in workers" :key="worker.id" :value="worker.id">{{worker.firstname}} {{worker.lastname}} ({{worker.pesel}})</option>
+        <option v-for="worker in workers" :key="worker.id" :value="worker.id">{{worker.user.name}} {{worker.lastname}} ({{worker.pesel}})</option>
       </select>
       <label for="type">Typ nieobecności</label>
       <select class="mb" id="type" v-model="legendId" required>
@@ -65,7 +65,7 @@ export default {
         }
       });
 
-      newEvent.title = `${legendElem.name} - ${worker.firstname} ${worker.lastname} (${worker.pesel})`;
+      newEvent.title = `${legendElem.name} - ${worker.user.name} ${worker.lastname} (${worker.pesel})`;
 
       this.$store.dispatch('fixEndDate', this.eEnd)
         .then(res => {

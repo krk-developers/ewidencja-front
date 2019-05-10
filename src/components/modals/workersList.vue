@@ -13,7 +13,7 @@
     </form>
     <ul class="workers-list">
       <li v-for="worker in workers" :key="worker.pesel">
-        <span>{{worker.firstname}} {{worker.lastname}}, pesel: {{worker.pesel}}, email: {{worker.email}}</span>
+        <span>{{worker.user.name}} {{worker.lastname}}, pesel: {{worker.pesel}}, email: {{worker.email}}</span>
         <button @click="deleteWorker" :data-id="worker.id">usuń</button>
       </li>
     </ul>

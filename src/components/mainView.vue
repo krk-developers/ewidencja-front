@@ -123,6 +123,9 @@ export default {
           // if(e.event.extendedProps.grandType === 'holiday'){
           //   e.el.classList.add('holiday-event');
           // }
+
+          e.el.classList.add(`event-id-${e.event.id}`);
+
           let title = '';
           const start = moment(e.event.start).format('DD-MM-YYYY');
           if(e.event.end){
@@ -144,12 +147,25 @@ export default {
           if(!e.isStart && e.isEnd){
             e.el.classList.add('event-end');
           }
+        },
+        eventMouseEnter(e){
+          const events = Array.from(document.querySelectorAll(`.event-id-${e.event.id}`));
+          events.map(el => {
+            el.classList.add('event-hovered')
+          });
+        },
+        eventMouseLeave(e){
+          const events = Array.from(document.querySelectorAll(`.event-id-${e.event.id}`));
+          events.map(el => {
+            el.classList.remove('event-hovered')
+          });
         }
         // select(e){ console.log(e); }
       });
 
       this.calendar.render();
       this.$store.commit('setCalendar', this.calendar);
+      // this.eventsHover();
     },
     downEndDate(endDate){
       const daysInMonth = moment(endDate.slice(0, 7), 'YYYY-MM').daysInMonth();
@@ -184,6 +200,11 @@ export default {
       
       const fixedEnd = `${endDay}-${endMonth}-${endYear}`;
       return fixedEnd;
+    },
+    eventsHover(){
+      const events = Array.from(document.querySelectorAll('a.fc-event'));
+      
+      console.log(events);
     }
   },
   created(){
@@ -263,11 +284,10 @@ ul{
       border: 1px solid red;
     }
 
-    .event-start{
-      border-right: 3px solid rgb(54, 235, 54);
-    }
-    .event-end{
-      border-left: 3px solid rgb(54, 235, 54);
+    .event-hovered{
+      // box-shadow: 0px 0px 10px 3px yellow;
+      background: rgb(122, 184, 247);
+      border: 1px solid rgb(122, 184, 247);
     }
 
   }

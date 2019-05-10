@@ -179,25 +179,22 @@ export const store = new Vuex.Store({
     sendEvents(context, events){
       const eventsArray = [];
 
-      events.forEach((e) => {
-        eventsArray.push({
-          id: e.id,
-          title: e.title,
-          start: moment(e.start).format('YYYY-MM-DD'),
-          end: moment(e.end).format('YYYY-MM-DD'),
-          allDay: true,
-          extendedProps: e.extendedProps
-        });
-      });
+      // events.forEach((e) => {
+      //   eventsArray.push({
+      //     id: e.id,
+      //     title: e.title,
+      //     start: moment(e.start).format('YYYY-MM-DD'),
+      //     end: moment(e.end).format('YYYY-MM-DD'),
+      //     allDay: true,
+      //     extendedProps: e.extendedProps
+      //   });
+      // });
 
       const data = {data: eventsArray};
       // firebase.database().ref('events').set(JSON.stringify(data));
     },
     addEvent(context, newEvent){
-      const calendar = context.state.calendar;
-      calendar.addEvent(newEvent);
-      // const events = calendar.getEvents();
-      // console.log(events);
+      context.state.calendar.addEvent(newEvent);
       context.dispatch('sendEvent', newEvent);
     },
     sendEvent(context, newEvent){
