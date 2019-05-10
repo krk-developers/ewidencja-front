@@ -1,12 +1,14 @@
 <template>
   <div class="main-container">
     <nav class="nav">
-      <button @click="$store.dispatch('showModal', 'sadmins-list')">Lista superadminów</button>
-      <button @click="$store.dispatch('showModal', 'admins-list')">Lista adminów</button>
-      <button @click="$store.dispatch('showModal', 'workers-list')">Lista pracowników</button>
-      <button @click="$store.dispatch('showModal', 'events-list')">Lista Nieobecności</button>
-      <button @click="$store.dispatch('showModal', 'add-event')">Dodaj nieobecność</button>
-      <!-- <button @click="$store.dispatch('showModal', 'add-holiday')">Zaznacz święto</button> -->
+      <div class="inner-nav">
+        <button @click="$store.commit('showModal', 'sadmins-list')">Lista Superadminów</button>
+        <button @click="$store.commit('showModal', 'admins-list')">Lista Adminów</button>
+        <button @click="$store.commit('showModal', 'workers-list')">Lista Pracowników</button>
+        <button @click="$store.commit('showModal', 'events-list')">Lista Nieobecności</button>
+        <button @click="$store.commit('showModal', 'add-event')">Dodaj Nieobecność</button>
+        <!-- <button @click="$store.commit('showModal', 'add-holiday')">Zaznacz święto</button> -->
+      </div>
     </nav>
     <div class="calendar-wrapper">
       <div class="calendar" id="calendar"></div>
@@ -185,7 +187,6 @@ export default {
     }
   },
   created(){
-    this.$store.commit('setVue', this);
     this.$store.dispatch('fetchWorkers');
     this.$store.dispatch('fetchLegend');
     this.$store.dispatch('fetchEvents');
@@ -198,15 +199,43 @@ export default {
 
 <style lang="scss">
 @import "../sass/flexMixins.scss";
+@import "../sass/elements.scss";
+
+.main-container{
+  height: inherit;
+  background: linear-gradient(lightblue, rgb(84, 166, 194));
+
+  .modal-window{
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 10;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(lightblue, rgb(84, 166, 194));
+  }
+}
+
+// all lists styles
+ul{
+  list-style-type: none;
+}
+
 
 .nav{
   @include flexRow;
-  background: lightblue;
-  height: 50px;
-  margin-bottom: 5px;
+  // background: skyblue;
+  height: 60px;
 
-  button{
-    padding: 5px 10px;
+  .inner-nav{
+    max-width: 1000px;
+    min-width: 800px;
+    @include flexRow(space-between, center);
+
+    button{
+      @include buttonWhite;
+      padding: 5px 10px;
+    }
   }
 }
 
@@ -216,6 +245,14 @@ export default {
   .calendar{
     max-width: 1000px;
     margin: 0 auto;
+    background: #fff;
+
+    .fc-left{
+      margin: 5px 0 0 15px;
+    }
+    .fc-right{
+      margin: 5px 5px 0 0;
+    }
 
     .fc-content{
       cursor: pointer;

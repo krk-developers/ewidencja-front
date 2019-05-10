@@ -1,15 +1,11 @@
 <template>
-  <div class="admins-list-modal">
-    <button class='close-modal-btn' @click="$store.dispatch('hideModal')">X</button>
+  <div class="admins-list-modal modal-window">
+    <close-button></close-button>
     <div class="add-admin">
       <button @click="addAdminSwitch">{{addAdminText}}</button>
-      <form @submit.prevent="addAdmin" class="add-admin--form" v-if="addAdminOn">
-        <label for="admin-firstname">imię <input id="admin-firstname" type="text" v-model="aFirstname" required></label>
-        <label for="admin-lastname">nazwisko <input id="admin-lastname" type="text" v-model="aLastname" required></label>
-        <label for="admin-pesel">pesel <input id="admin-pesel" type="text" v-model="aPesel" required></label>
-        <label for="admin-email">email <input id="admin-email" type="email" v-model="aEmail" required></label>
-        <button type="submit">Dodaj</button>
-      </form>
+      <div v-if="addAdminOn">
+        <add-user-form v-bind:userType="'admin'"></add-user-form>
+      </div>
     </div>
     <form class="search-admin--form">
       <label for="search-admin--input">Wpisz imię i nazwisko</label>
@@ -25,17 +21,20 @@
 </template>
 
 <script>
+import closeButton from './modals-elements/closeButton.vue';
+import addUserForm from './modals-elements/addUserForm.vue';
+
 export default {
+  components:{
+    'close-button': closeButton,
+    'add-user-form': addUserForm
+  },
   data(){
     return {
       admins: this.$store.getters.getAdmins,
       adminName: '',
       addAdminOn: false,
-      addAdminText: 'Dodaj admina',
-      aFirstname: '',
-      aLastname: '',
-      aPesel: '',
-      aEmail: ''
+      addAdminText: 'Dodaj admina'
     }
   },
   methods: {
@@ -47,18 +46,6 @@ export default {
       else{
         this.addAdminText = 'Dodaj admina';
       }
-    },
-    addAdmin(){
-      const newAdmin = {
-        firstname: this.aFirstname,
-        lastname: this.aLastname,
-        pesel: this.aPesel,
-        email: this.aEmail
-      };
-
-      console.log(newAdmin);
-
-      // fetchSuperadmins
     },
     deleteAdmin(e){
       const adminId = e.target.attributes['data-id'].value;
@@ -81,37 +68,30 @@ export default {
 
 <style scoped lang="scss">
 @import "../../sass/flexMixins.scss";
+@import "../../sass/elements.scss";
 
 .admins-list-modal{
   @include flexColumn(flex-start, center);
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 10;
-  width: 100vw;
-  height: 100vh;
   padding-top: 50px;
-  background: gray;
-
-  .close-modal-btn{
-    padding: 10px 20px;
-    position: fixed;
-    top: 10px;
-    right: 10px;
-  }
 
   .add-admin{
     @include flexColumn;
     margin-bottom: 30px;
 
-    .add-admin--form{
-      @include flexColumn;
+    button{
+      @include buttonWhite;
+      padding: 5px 10px;
+      margin-bottom: 20px;
     }
   }
 
   .search-admin--form{
     @include flexColumn;
     margin-bottom: 20px;
+
+    input{
+      @include inputWhite;
+    }
   }
 
   .admin-list{
@@ -121,6 +101,7 @@ export default {
       margin-bottom: 10px;
 
       button{
+        @include buttonWhite;
         padding: 1px 6px;
         margin-left: 20px;
       }

@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
+import {eventBus} from '../main.js';
 const moment = require('moment');
 import * as secretData from '../secretData.js';
 
@@ -8,12 +9,13 @@ Vue.use(Vuex);
 
 export const store = new Vuex.Store({
   state: {
-    logged: true,
+    currentView: 'main-view',
     modalVisible: false,
     calendar: null,
     vue: null,
     legendHoliday: [],
     legendLeave: [],
+    userTypes: [],
     eventsArray: [],
     workersArray: [],
     adminsArray: [{id: 1, firstname: 'Mariola', lastname: 'Honkisz', pesel: 84675675647567, email: 'mariola@test.pl'}],
@@ -24,8 +26,8 @@ export const store = new Vuex.Store({
     getCalendar(state){
       return state.calendar;
     },
-    checkIfLogged(state){
-      return !state.logged;
+    getCurrentView(state){
+      return state.currentView;
     },
     getModalVisible(state){
       return state.modalVisible;
@@ -35,6 +37,9 @@ export const store = new Vuex.Store({
     },
     getLegendLeave(state){
       return state.legendLeave;
+    },
+    getUserTypes(state){
+      return state.userTypes;
     },
     getEvents(state){
       return state.eventsArray;
@@ -54,8 +59,8 @@ export const store = new Vuex.Store({
     setCalendar(state, calendar){
       state.calendar = calendar;
     },
-    userLoggedTrue(state){
-      state.logged = true;
+    setCurrentView(state, data){
+      state.currentView = data;
     },
     showModal(state, data){
       state.modalVisible = data;
@@ -70,10 +75,14 @@ export const store = new Vuex.Store({
       state.legendLeave = data;
     },
     setLegendHoliday(state, data){
-      state.legendHoliday = data;
+      // state.legendHoliday = data;
     },
     setLegendLeave(state, data){
-      state.legendLeave = data;
+      // state.legendLeave = data;
+    },
+    setUserTypes(state, data){
+      state.userTypes = data;
+      eventBus.$emit('getUserTypes');
     },
     setEvents(state, data){
       state.eventsArray = data;
@@ -84,21 +93,12 @@ export const store = new Vuex.Store({
   },
   // ----- actions -------------------------
   actions: {
-    userLogged(context){
-      context.commit('userLoggedTrue');
-    },
-    showModal(context, data){
-      context.commit('showModal', data);
-    },
-    hideModal(context){
-      context.commit('hideModal');
-    },
     setLegend(context, data){
-      const legendHoliday = data.filter(i => i.working_day === 0);
-      context.commit('setLegendHoliday', legendHoliday);
+      // const legendHoliday = data.filter(i => i.working_day === 0);
+      // context.commit('setLegendHoliday', legendHoliday);
 
-      const legendLeave = data.filter(i => i.working_day === 1);
-      context.commit('setLegendLeave', legendLeave);
+      // const legendLeave = data.filter(i => i.working_day === 1);
+      // context.commit('setLegendLeave', legendLeave);
     },
     fetchWorkers(context){
       const url = secretData.getWorkers;
@@ -119,6 +119,12 @@ export const store = new Vuex.Store({
 
       // const legend = legendData;
       // context.dispatch('setLegend', legend.data);
+    },
+    fetchUserTypes(context){
+      context.state.vue.$http.get(secretData.getUserTypes)
+      .then(res => {
+        context.commit('setUserTypes', res.body.data);
+      });
     },
     fixEndDate(context, endDate){
       const daysInMonth = moment(endDate.slice(0, 7), 'YYYY-MM').daysInMonth();

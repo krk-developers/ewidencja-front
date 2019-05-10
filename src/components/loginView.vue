@@ -8,10 +8,14 @@
       <button type="submit">Zaloguj</button>
       <p>kliknij "Zaloguj"</p>
     </form>
+    <br>
+    <button class="goToRegister-button" @click="goToRegister">Rejestracja</button>
   </div>
 </template>
 
 <script>
+import {eventBus} from '../main.js';
+
 export default {
   data(){
     return {
@@ -25,9 +29,12 @@ export default {
         email: this.email,
         password: this.pass
       };
-      console.log(data);
+      // console.log(data);
 
-      this.$store.dispatch('userLogged');
+      this.$store.commit('setCurrentView', 'main-view');
+    },
+    goToRegister(){
+      this.$store.commit('setCurrentView', 'register-view');
     }
   }
 }
@@ -36,37 +43,74 @@ export default {
 <style scoped lang="scss">
 @import "../sass/flexMixins.scss";
 
-  .login-container{
-    @include flexRow;
-    width: 100vw;
-    height: 100vh;
-    background: gray;
+.login-container{
+  @include flexColumn;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(lightblue, rgb(84, 166, 194));
 
-    form{
-      width: 200px;
-      height: 200px;
-      display: flex;
-      flex-direction: column;
+  form{
+    width: 200px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
 
-      label{
-        text-align: center;
-      }
+    label{
+      text-align: center;
+    }
 
-      input{
-        margin-bottom: 20px;
-        text-align: center;
-      }
+    input{
+      height: 24px;
+      margin-bottom: 20px;
+      text-align: center;
+      border-radius: 5px;
+      border: 2px solid black;
 
-      button{
-        padding: 10px 20px;
-      }
-
-      p{
-        text-align: center;
-        margin-top: 10px;
+      &:focus{
+        border: 2px solid orange;
       }
     }
+
+    button{
+      padding: 5px 20px;
+      border-radius: 5px;
+      border: 2px solid black;
+      background: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      transition: all .2s linear;
+
+      &:focus{
+        border: 2px solid orange;
+      }
+      &:hover{
+        background: rgb(236, 236, 236);
+      }
+    }
+
+    p{
+      text-align: center;
+      margin-top: 10px;
+    }
   }
+
+  .goToRegister-button{
+    padding: 5px 20px;
+    border-radius: 5px;
+    border: 2px solid black;
+    background: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all .2s linear;
+
+    &:focus{
+      border: 2px solid orange;
+    }
+    &:hover{
+      background: rgb(236, 236, 236);
+    }
+  }
+}
 
 </style>
 

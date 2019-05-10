@@ -1,6 +1,6 @@
 <template>
-  <div class="events-list-modal">
-    <button class='close-modal-btn' @click="$store.dispatch('hideModal')">X</button>
+  <div class="events-list-modal modal-window">
+    <close-button></close-button>
     <form class="search-event--form">
       <label for="search-event--input">Wpisz imię i nazwisko</label>
       <input type="text" id="search-event--input" v-model="workerName">
@@ -12,9 +12,13 @@
 </template>
 
 <script>
+import closeButton from './modals-elements/closeButton.vue';
 // import {eventBus} from '../../main.js';
 
 export default {
+  components:{
+    'close-button': closeButton
+  },
   data(){
     return {
       leaveEvents: [],
@@ -46,28 +50,18 @@ export default {
 
 <style lang="scss">
 @import "../../sass/flexMixins.scss";
+@import "../../sass/elements.scss";
 
 .events-list-modal{
   @include flexColumn;
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 10;
-  width: 100vw;
-  height: 100vh;
-  background: gray;
-  
-  
-  .close-modal-btn{
-    padding: 10px 20px;
-    position: fixed;
-    top: 10px;
-    right: 10px;
-  }
 
   .search-event--form{
     @include flexColumn;
     margin-bottom: 20px;
+
+    input{
+      @include inputWhite;
+    }
   }
 }
 

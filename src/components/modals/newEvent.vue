@@ -1,6 +1,6 @@
 <template>
-  <div class="add-event-modal">
-    <button class='close-modal-btn' @click="$store.dispatch('hideModal')">X</button>
+  <div class="add-event-modal modal-window">
+    <close-button></close-button>
     <form @submit.prevent="addEvent">
       <label for="worker">Pracownik</label>
       <select class="mb" id="worker" v-model="eWorkerId" required>
@@ -23,9 +23,13 @@
 </template>
 
 <script>
+import closeButton from './modals-elements/closeButton.vue';
 import {eventBus} from '../../main.js';
 
 export default {
+  components:{
+    'close-button': closeButton
+  },
   data(){
     return {
       workers: this.$store.getters.getWorkers,
@@ -68,7 +72,7 @@ export default {
           newEvent.end = res;
 
           this.$store.dispatch('addEvent', newEvent);
-          this.$store.dispatch('hideModal');
+          this.$store.commit('hideModal');
       });
     }
   }
@@ -77,34 +81,26 @@ export default {
 
 <style scoped lang="scss">
 @import "../../sass/flexMixins.scss";
+@import "../../sass/elements.scss";
 
 .add-event-modal{
   @include flexColumn;
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 10;
-  width: 100vw;
-  height: 100vh;
-  background: gray;
-
-  .close-modal-btn{
-    padding: 10px 20px;
-    position: fixed;
-    top: 10px;
-    right: 10px;
-  }
 
   form{
     display: flex;
     flex-direction: column;
     align-items: center;
 
+    input, select{
+      @include inputWhite;
+    }
+
     .mb{
       margin-bottom: 15px;
     }
 
     button{
+      @include buttonWhite;
       padding: 5px 10px;
     }
   }

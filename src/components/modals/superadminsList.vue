@@ -1,15 +1,11 @@
 <template>
-  <div class="superadmins-list-modal">
-    <button class='close-modal-btn' @click="$store.dispatch('hideModal')">X</button>
+  <div class="superadmins-list-modal modal-window">
+    <close-button></close-button>
     <div class="add-superadmin">
       <button @click="addSuperAdminSwitch">{{addSuperAdminText}}</button>
-      <form @submit.prevent="addSuperAdmin" class="add-superadmin--form" v-if="addSuperAdminOn">
-        <label for="superadmin-firstname">imię <input id="superadmin-firstname" type="text" v-model="saFirstname" required></label>
-        <label for="superadmin-lastname">nazwisko <input id="superadmin-lastname" type="text" v-model="saLastname" required></label>
-        <label for="superadmin-pesel">pesel <input id="superadmin-pesel" type="text" v-model="saPesel" required></label>
-        <label for="superadmin-email">email <input id="superadmin-email" type="email" v-model="saEmail" required></label>
-        <button type="submit">Dodaj</button>
-      </form>
+      <div v-if="addSuperAdminOn">
+        <add-user-form v-bind:userType="'superadmin'"></add-user-form>
+      </div>
     </div>
     <form class="search-superadmin--form">
       <label for="search-superadmin--input">Wpisz imię i nazwisko</label>
@@ -25,17 +21,20 @@
 </template>
 
 <script>
+import closeButton from './modals-elements/closeButton.vue';
+import addUserForm from './modals-elements/addUserForm.vue';
+
 export default {
+  components:{
+    'close-button': closeButton,
+    'add-user-form': addUserForm
+  },
   data(){
     return {
       sAdmins: this.$store.getters.getSuperAdmins,
       sAdminName: '',
       addSuperAdminOn: false,
-      addSuperAdminText: 'Dodaj superadmina',
-      saFirstname: '',
-      saLastname: '',
-      saPesel: '',
-      saEmail: ''
+      addSuperAdminText: 'Dodaj superadmina'
     }
   },
   methods: {
@@ -47,18 +46,6 @@ export default {
       else{
         this.addSuperAdminText = 'Dodaj superadmina';
       }
-    },
-    addSuperAdmin(){
-      const newSuperAdmin = {
-        firstname: this.saFirstname,
-        lastname: this.saLastname,
-        pesel: this.saPesel,
-        email: this.saEmail
-      };
-
-      console.log(newSuperAdmin);
-
-      // fetchSuperadmins
     },
     deleteSuperAdmin(e){
       const sAdminId = e.target.attributes['data-id'].value;
@@ -81,37 +68,30 @@ export default {
 
 <style scoped lang="scss">
 @import "../../sass/flexMixins.scss";
+@import "../../sass/elements.scss";
 
 .superadmins-list-modal{
   @include flexColumn(flex-start, center);
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 10;
-  width: 100vw;
-  height: 100vh;
   padding-top: 50px;
-  background: gray;
-
-  .close-modal-btn{
-    padding: 10px 20px;
-    position: fixed;
-    top: 10px;
-    right: 10px;
-  }
 
   .add-superadmin{
     @include flexColumn;
     margin-bottom: 30px;
 
-    .add-superadmin--form{
-      @include flexColumn;
+    button{
+      @include buttonWhite;
+      padding: 5px 10px;
+      margin-bottom: 20px;
     }
   }
 
   .search-superadmin--form{
     @include flexColumn;
     margin-bottom: 20px;
+
+    input{
+      @include inputWhite;
+    }
   }
 
   .superadmin-list{
@@ -121,6 +101,7 @@ export default {
       margin-bottom: 10px;
 
       button{
+        @include buttonWhite;
         padding: 1px 6px;
         margin-left: 20px;
       }
