@@ -18,6 +18,7 @@ export const store = new Vuex.Store({
     userTypes: [],
     eventsArray: [],
     workersArray: [],
+    employersArray: [],
     adminsArray: [{id: 1, firstname: 'Mariola', lastname: 'Honkisz', pesel: 84675675647567, email: 'mariola@test.pl'}],
     superAdminsArray: [{id: 1, firstname: 'Monika', lastname: 'Hołymczuk', pesel: 25432634554, email: 'monikaholymczuk@test.pl'}]
   },
@@ -46,6 +47,9 @@ export const store = new Vuex.Store({
     },
     getWorkers(state){
       return state.workersArray;
+    },
+    getEmployers(state){
+      return state.employersArray;
     },
     getAdmins(state){
       return state.adminsArray;
@@ -89,6 +93,9 @@ export const store = new Vuex.Store({
     },
     setWorkers(state, workers){
       state.workersArray = workers;
+    },
+    setEmployers(state, employers){
+      state.employersArray = employers;
     }
   },
   // ----- actions -------------------------
@@ -104,6 +111,16 @@ export const store = new Vuex.Store({
       const url = secretData.getWorkers;
       context.state.vue.$http.get(url)
       .then(res => { context.commit('setWorkers', res.body.data) })
+      .catch(err => { console.log(err); });
+
+      // const u = '{"data":[{"id":6,"name":"Jan","lastname":"Bąkowski","email":"janek@onet.pl","pesel":763445637456,"role_display_name":"Pracownik"},{"id":7,"name":"Jan","lastname":"Kowalski","email":"kowal@wp.pl","pesel":74030704836,"role_display_name":"Pracownik"},{"id":8,"name":"Edward","lastname":"Nowak","email":"nowak@o2.pl","pesel":995030704555,"role_display_name":"Pracownik"}]}';
+      // const workers = JSON.parse(u).data;
+      // context.commit('setWorkers', workers);
+    },
+    fetchEmployers(context){
+      const url = secretData.getEmployers;
+      context.state.vue.$http.get(url)
+      .then(res => { context.commit('setEmployers', res.body.data) })
       .catch(err => { console.log(err); });
 
       // const u = '{"data":[{"id":6,"name":"Jan","lastname":"Bąkowski","email":"janek@onet.pl","pesel":763445637456,"role_display_name":"Pracownik"},{"id":7,"name":"Jan","lastname":"Kowalski","email":"kowal@wp.pl","pesel":74030704836,"role_display_name":"Pracownik"},{"id":8,"name":"Edward","lastname":"Nowak","email":"nowak@o2.pl","pesel":995030704555,"role_display_name":"Pracownik"}]}';

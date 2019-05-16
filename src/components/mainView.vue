@@ -4,6 +4,7 @@
       <div class="inner-nav">
         <button @click="$store.commit('showModal', 'sadmins-list')">Lista Superadminów</button>
         <button @click="$store.commit('showModal', 'admins-list')">Lista Adminów</button>
+        <button @click="$store.commit('showModal', 'employers-list')">Lista Pracodawców</button>
         <button @click="$store.commit('showModal', 'workers-list')">Lista Pracowników</button>
         <button @click="$store.commit('showModal', 'events-list')">Lista Nieobecności</button>
         <button @click="$store.commit('showModal', 'add-event')">Dodaj Nieobecność</button>
@@ -24,6 +25,9 @@
     </div>
     <div v-if="$store.getters.getModalVisible === 'workers-list'">
       <workers-list></workers-list>
+    </div>
+    <div v-if="$store.getters.getModalVisible === 'employers-list'">
+      <employers-list></employers-list>
     </div>
     <div v-if="$store.getters.getModalVisible === 'admins-list'">
       <admins-list></admins-list>
@@ -50,6 +54,7 @@ import newEvent from './modals/newEvent.vue';
 import eventsList from './modals/eventsList.vue';
 import newHoliday from './modals/newHoliday.vue';
 import workersList from './modals/workersList.vue';
+import employersList from './modals/employersList.vue';
 import adminsList from './modals/adminsList.vue';
 import superadminsList from './modals/superadminsList.vue';
 
@@ -62,6 +67,7 @@ export default {
     'events-list': eventsList,
     'new-holiday': newHoliday,
     'workers-list': workersList,
+    'employers-list': employersList,
     'admins-list': adminsList,
     'superadmins-list': superadminsList
   },
@@ -209,6 +215,7 @@ export default {
   },
   created(){
     this.$store.dispatch('fetchWorkers');
+    this.$store.dispatch('fetchEmployers');
     this.$store.dispatch('fetchLegend');
     this.$store.dispatch('fetchEvents');
   },
@@ -249,13 +256,13 @@ ul{
   height: 60px;
 
   .inner-nav{
-    max-width: 1000px;
-    min-width: 800px;
-    @include flexRow(space-between, center);
+    width: 960px;
+    @include flexRow;
 
     button{
       @include buttonWhite;
       padding: 5px 10px;
+      margin: 0 10px;
     }
   }
 }
