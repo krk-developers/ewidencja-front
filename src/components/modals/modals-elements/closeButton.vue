@@ -1,5 +1,5 @@
 <template>
-  <button class='close-modal-btn' @click="$store.commit('hideModal')">X</button>
+  <button class='close-modal-btn' @click="$store.dispatch('toggleModal', false)">X</button>
 </template>
 
 <style lang="scss">

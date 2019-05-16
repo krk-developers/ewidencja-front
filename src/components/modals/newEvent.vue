@@ -72,7 +72,7 @@ export default {
           newEvent.end = res;
 
           this.$store.dispatch('addEvent', newEvent);
-          this.$store.commit('hideModal');
+          this.$store.dispatch('toggleModal', false);
       });
     }
   }

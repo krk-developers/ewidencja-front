@@ -66,11 +66,8 @@ export const store = new Vuex.Store({
     setCurrentView(state, data){
       state.currentView = data;
     },
-    showModal(state, data){
+    toggleModal(state, data){
       state.modalVisible = data;
-    },
-    hideModal(state){
-      state.modalVisible = false;
     },
     setVue(state, vue){
       state.vue = vue;
@@ -100,6 +97,17 @@ export const store = new Vuex.Store({
   },
   // ----- actions -------------------------
   actions: {
+    toggleModal(context, data){
+      const html = document.querySelector('html');
+      if(!data){
+        html.style.overflowX = 'auto';
+        context.commit('toggleModal', data);
+      }
+      else{
+        html.style.overflowX = 'hidden';
+        context.commit('toggleModal', data);
+      }
+    },
     setLegend(context, data){
       // const legendHoliday = data.filter(i => i.working_day === 0);
       // context.commit('setLegendHoliday', legendHoliday);

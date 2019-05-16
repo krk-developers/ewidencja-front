@@ -2,37 +2,37 @@
   <div class="main-container">
     <nav class="nav">
       <div class="inner-nav">
-        <button @click="$store.commit('showModal', 'sadmins-list')">Superadministratorzy</button>
-        <button @click="$store.commit('showModal', 'admins-list')">Administratorzy</button>
-        <button @click="$store.commit('showModal', 'employers-list')">Pracodawcy</button>
-        <button @click="$store.commit('showModal', 'workers-list')">Pracownicy</button>
-        <button @click="$store.commit('showModal', 'events-list')">Nieobecności</button>
-        <button @click="$store.commit('showModal', 'add-event')">Dodaj Nieobecność</button>
-        <!-- <button @click="$store.commit('showModal', 'add-holiday')">Zaznacz święto</button> -->
+        <button @click="$store.dispatch('toggleModal', 'sadmins-list')">Superadministratorzy</button>
+        <button @click="$store.dispatch('toggleModal', 'admins-list')">Administratorzy</button>
+        <button @click="$store.dispatch('toggleModal', 'employers-list')">Pracodawcy</button>
+        <button @click="$store.dispatch('toggleModal', 'workers-list')">Pracownicy</button>
+        <button @click="$store.dispatch('toggleModal', 'events-list')">Nieobecności</button>
+        <button @click="$store.dispatch('toggleModal', 'add-event')">Dodaj Nieobecność</button>
+        <!-- <button @click="$store.dispatch('toggleModal', 'add-holiday')">Zaznacz święto</button> -->
       </div>
     </nav>
-    <div class="calendar-wrapper">
+    <div v-show="!$store.getters.getModalVisible" class="calendar-wrapper">
       <div class="calendar" id="calendar"></div>
     </div>
-    <div v-if="$store.getters.getModalVisible === 'add-event'">
+    <div class="modal-wrapper" v-if="$store.getters.getModalVisible === 'add-event'">
       <new-event></new-event>
     </div>
-    <div v-if="$store.getters.getModalVisible === 'events-list'">
+    <div class="modal-wrapper" v-if="$store.getters.getModalVisible === 'events-list'">
       <events-list></events-list>
     </div>
-    <div v-if="$store.getters.getModalVisible === 'add-holiday'">
+    <div class="modal-wrapper" v-if="$store.getters.getModalVisible === 'add-holiday'">
       <new-holiday></new-holiday>
     </div>
-    <div v-if="$store.getters.getModalVisible === 'workers-list'">
+    <div class="modal-wrapper" v-if="$store.getters.getModalVisible === 'workers-list'">
       <workers-list></workers-list>
     </div>
-    <div v-if="$store.getters.getModalVisible === 'employers-list'">
+    <div class="modal-wrapper" v-if="$store.getters.getModalVisible === 'employers-list'">
       <employers-list></employers-list>
     </div>
-    <div v-if="$store.getters.getModalVisible === 'admins-list'">
+    <div class="modal-wrapper" v-if="$store.getters.getModalVisible === 'admins-list'">
       <admins-list></admins-list>
     </div>
-    <div v-if="$store.getters.getModalVisible === 'sadmins-list'">
+    <div class="modal-wrapper" v-if="$store.getters.getModalVisible === 'sadmins-list'">
       <superadmins-list></superadmins-list>
     </div>
   </div>
@@ -232,16 +232,23 @@ export default {
 .main-container{
   min-width: 1000px;
   background: linear-gradient(lightblue, rgb(84, 166, 194));
+  position: relative;
 
-  .modal-window{
+  .modal-wrapper{
+    @include flexRow;
     position: absolute;
+    z-index: 10;
     left: 0;
     top: 0;
-    z-index: 10;
-    width: 98vw;
-    height: 1024px;
+    height: 800px;
+    width: 100vw;
     background: linear-gradient(lightblue, rgb(84, 166, 194));
+
+    .modal-window{
+      width: 800px;
+    }
   }
+
 }
 
 // all lists styles

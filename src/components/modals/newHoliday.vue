@@ -45,7 +45,7 @@ export default {
 
         // eventBus.$emit('addEvent', newHoliday);
         this.$store.dispatch('addEvent', newHoliday);
-        this.$store.commit('hideModal');
+        this.$store.dispatch('toggleModal', false);
       });
     }
   }
