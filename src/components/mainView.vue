@@ -285,9 +285,8 @@ ul{
     }
 
     .event-hovered{
-      // box-shadow: 0px 0px 10px 3px yellow;
-      background: rgb(122, 184, 247);
-      border: 1px solid rgb(122, 184, 247);
+      background: rgb(49, 131, 49);
+      border: 1px solid rgb(49, 131, 49);
     }
 
   }
