@@ -230,16 +230,16 @@ export default {
 @import "../sass/elements.scss";
 
 .main-container{
-  height: inherit;
+  min-width: 1000px;
   background: linear-gradient(lightblue, rgb(84, 166, 194));
 
   .modal-window{
-    position: fixed;
+    position: absolute;
     left: 0;
     top: 0;
     z-index: 10;
-    width: 100vw;
-    height: 100vh;
+    width: 98vw;
+    height: 1024px;
     background: linear-gradient(lightblue, rgb(84, 166, 194));
   }
 }
@@ -252,11 +252,11 @@ ul{
 
 .nav{
   @include flexRow;
-  // background: skyblue;
   height: 60px;
+  min-width: 1000px;
 
   .inner-nav{
-    width: 960px;
+    width: 1000px;
     @include flexRow;
 
     button{
@@ -269,9 +269,10 @@ ul{
 
 .calendar-wrapper{
   position: relative;
+  padding-bottom: 10px;
 
   .calendar{
-    max-width: 1000px;
+    width: 1000px;
     margin: 0 auto;
     background: #fff;
 

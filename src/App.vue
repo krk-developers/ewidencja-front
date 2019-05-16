@@ -42,18 +42,12 @@ export default {
   box-sizing: border-box;
 }
 
+html{
+  background: rgb(84, 166, 194);
+}
+
 body{
-  // min-height: 100vh;
   font-family: 'Arial'; 
-  color: #000;
-
-  #app{
-    height: 100vh;
-
-    >div{
-      height: inherit;
-    }
-  }
 }
 
 
