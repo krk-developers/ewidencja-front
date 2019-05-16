@@ -2,11 +2,11 @@
   <div class="main-container">
     <nav class="nav">
       <div class="inner-nav">
-        <button @click="$store.commit('showModal', 'sadmins-list')">Lista Superadminów</button>
-        <button @click="$store.commit('showModal', 'admins-list')">Lista Adminów</button>
-        <button @click="$store.commit('showModal', 'employers-list')">Lista Pracodawców</button>
-        <button @click="$store.commit('showModal', 'workers-list')">Lista Pracowników</button>
-        <button @click="$store.commit('showModal', 'events-list')">Lista Nieobecności</button>
+        <button @click="$store.commit('showModal', 'sadmins-list')">Superadministratorzy</button>
+        <button @click="$store.commit('showModal', 'admins-list')">Administratorzy</button>
+        <button @click="$store.commit('showModal', 'employers-list')">Pracodawcy</button>
+        <button @click="$store.commit('showModal', 'workers-list')">Pracownicy</button>
+        <button @click="$store.commit('showModal', 'events-list')">Nieobecności</button>
         <button @click="$store.commit('showModal', 'add-event')">Dodaj Nieobecność</button>
         <!-- <button @click="$store.commit('showModal', 'add-holiday')">Zaznacz święto</button> -->
       </div>
