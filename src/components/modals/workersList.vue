@@ -57,7 +57,7 @@ export default {
       const pattern = new RegExp(text, 'i');
       const allWorkers = this.$store.getters.getWorkers;
       this.workers = allWorkers.filter(i => {
-        if(pattern.test(`${i.firstname} ${i.lastname}`)){
+        if(pattern.test(`${i.user.name} ${i.lastname}`)){
           return i;
         }
       });
