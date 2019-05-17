@@ -235,7 +235,7 @@ export default {
   position: relative;
 
   .modal-wrapper{
-    @include flexRow;
+    @include flexColumn(flex-start, center);
     position: absolute;
     z-index: 10;
     left: 0;
