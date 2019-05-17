@@ -201,29 +201,7 @@ export const store = new Vuex.Store({
 
       })
     },
-    sendEvents(context, events){
-      const eventsArray = [];
-
-      // events.forEach((e) => {
-      //   eventsArray.push({
-      //     id: e.id,
-      //     title: e.title,
-      //     start: moment(e.start).format('YYYY-MM-DD'),
-      //     end: moment(e.end).format('YYYY-MM-DD'),
-      //     allDay: true,
-      //     extendedProps: e.extendedProps
-      //   });
-      // });
-
-      const data = {data: eventsArray};
-      // firebase.database().ref('events').set(JSON.stringify(data));
-    },
-    addEvent(context, newEvent){
-      context.state.calendar.addEvent(newEvent);
-      context.dispatch('sendEvent', newEvent);
-    },
     sendEvent(context, newEvent){
-      // console.log(newEvent);
       const formatedEvent = {
         start: newEvent.start,
         end: newEvent.end,
@@ -234,7 +212,7 @@ export const store = new Vuex.Store({
 
       context.state.vue.$http.post(secretData.postEvent, formatedEvent)
       .then(res => {
-      //  console.log(res); 
+        context.dispatch('fetchEvents'); 
       })
       .catch(err => { console.log(err); });
     },
@@ -242,7 +220,7 @@ export const store = new Vuex.Store({
       const url = secretData.deleteEvent + id;
       context.state.vue.$http.delete(url)
       .then(res => {
-        // console.log(res);
+        context.dispatch('fetchEvents');
       })
       .catch(err => { console.log(err); });
     }

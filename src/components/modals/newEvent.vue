@@ -71,7 +71,7 @@ export default {
         .then(res => {
           newEvent.end = res;
 
-          this.$store.dispatch('addEvent', newEvent);
+          this.$store.dispatch('sendEvent', newEvent);
           this.$store.dispatch('toggleModal', false);
       });
     }

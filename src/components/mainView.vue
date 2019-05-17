@@ -116,10 +116,8 @@ export default {
           else if(date.getDay() === 0){ return 'Niedziela' }
         },
         eventClick(e){
-          const confirm = window.confirm(`Czy na pewno chcesz usunąć nieobecność\n${e.event.title}?`);
+          const confirm = window.confirm(`Usunąć nieobecność?\n${e.event.title}`);
           if(confirm){
-            e.event.remove();
-            // vue.$store.dispatch('sendEvents', vue.calendar.getEvents());
             vue.$store.dispatch('deleteEvent', e.event.id);
           }
         },
