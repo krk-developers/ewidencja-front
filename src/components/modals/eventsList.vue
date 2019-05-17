@@ -1,12 +1,20 @@
 <template>
   <div class="events-list-modal modal-window">
     <close-button></close-button>
+    <h2>Lista Nieobecności</h2>
     <form class="search-event--form">
-      <label for="search-event--input">Wpisz imię i nazwisko</label>
-      <input type="text" id="search-event--input" v-model="workerName">
+      <label for="search-event--input">Wyszukaj</label>
+      <input type="text" id="search-event--input" v-model="workerName" title="Podaj imię, nazwisko, pesel lub typ nieobecności.">
     </form>
     <ul>
-      <li v-for="event in currentEvents" :key="event.id">{{event.title}} | od: {{event.start}} do: {{event.end}}</li>
+      <li class="events-item" v-for="event in currentEvents" :key="event.id">
+        <span>
+          {{event.title}}
+        </span>
+        <span>
+          {{event.start}}&#8195;&#8212;&#8195;{{event.end}}
+        </span>
+        </li>
     </ul>
   </div>
 </template>
@@ -54,13 +62,27 @@ export default {
 
 .events-list-modal{
   @include flexColumn;
+  padding-top: 20px;
 
   .search-event--form{
     @include flexColumn;
-    margin-bottom: 20px;
+    margin: 20px 0;
 
     input{
       @include inputWhite;
+      margin-top: 10px;
+    }
+  }
+
+  .events-item{
+    @include flexRow(space-between, center);
+    border: 1px solid black;
+    background: #fff;
+    padding: 4px 10px;
+    margin-bottom: 2px;
+
+    span:first-child{
+      margin-right: 50px;
     }
   }
 }
