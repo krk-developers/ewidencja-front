@@ -223,6 +223,33 @@ export const store = new Vuex.Store({
         context.dispatch('fetchEvents');
       })
       .catch(err => { console.log(err); });
+    },
+    sendUser(context, newUser){
+      // console.log(newUser);
+
+      if(newUser.userType === 'worker'){
+        context.state.vue.$http.post('workers', newUser.userData)
+        .then(res => {
+          context.dispatch('fetchWorkers'); 
+          // $on w komponencie addUser
+          eventBus.$emit('workerAdd', true);
+        })
+        .catch(err => {
+          console.log(err);
+          // $on w komponencie addUser
+          eventBus.$emit('workerAdd', false);
+        });
+      }
+      
+    },
+    deleteUser(context, user){
+      if(user.userType === 'worker'){
+        context.state.vue.$http.delete(`workers/${user.id}`)
+        .then(res => {
+          context.dispatch('fetchWorkers'); 
+        })
+        .catch(err => { console.log(err); });
+      }
     }
   }
 });

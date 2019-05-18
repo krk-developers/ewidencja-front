@@ -1,6 +1,7 @@
 <template>
   <div class="workers-list-modal modal-window">
     <close-button></close-button>
+    <h2>Lista Pracowników</h2>
     <div class="add-worker">
       <button @click="addWorkerSwitch">{{addWorkerText}}</button>
       <div v-if="addWorkerOn">
@@ -8,13 +9,16 @@
       </div>
     </div>
     <form class="search-worker--form">
-      <label for="search-worker--input">Wpisz imię i nazwisko</label>
-      <input type="text" id="search-worker--input" v-model="workerName">
+      <label for="search-worker--input">Wyszukaj - podaj imię, nazwisko lub PESEL</label>
+      <input type="text" id="search-worker--input" v-model="workerSearch">
     </form>
-    <ul class="workers-list">
+    <ul v-if="showList" class="workers-list">
       <li v-for="worker in workers" :key="worker.pesel">
-        <span>{{worker.user.name}} {{worker.lastname}}, pesel: {{worker.pesel}}, email: {{worker.email}}</span>
-        <button @click="deleteWorker" :data-id="worker.id">usuń</button>
+        <span>{{worker.user.name}} {{worker.lastname}}&#8195;({{worker.pesel}})&#8195;&#8212;&#8195;{{worker.user.email}}</span>
+        <div>
+          <button @click="editWorker" :data-id="worker.id">edytuj</button>
+          <button @click="deleteWorker" :data-id="worker.id">usuń</button>
+        </div>
       </li>
     </ul>
   </div>
@@ -23,6 +27,7 @@
 <script>
 import closeButton from './modals-elements/closeButton.vue';
 import addUserForm from './modals-elements/addUserForm.vue';
+import { eventBus } from '../../main';
 
 export default {
   components:{
@@ -32,7 +37,8 @@ export default {
   data(){
     return {
       workers: this.$store.getters.getWorkers,
-      workerName: '',
+      showList: true,
+      workerSearch: '',
       addWorkerOn: false,
       addWorkerText: 'Dodaj pracownika'
     }
@@ -47,21 +53,39 @@ export default {
         this.addWorkerText = 'Dodaj pracownika';
       }
     },
+    editWorker(e){
+      const workerId = e.target.attributes['data-id'].value;
+      console.log(`edit worker: id ${workerId}`);
+    },
     deleteWorker(e){
       const workerId = e.target.attributes['data-id'].value;
-      console.log(`delete worker: id ${workerId}`);
+      // console.log(`delete worker: id ${workerId}`);
+      this.$store.dispatch('deleteUser', {userType: 'worker', id: workerId});
+
+      //  usunięcie placownika z listy w obecnym widoku
+      const ind = this.workers.findIndex(el => {
+        return el.id == workerId;
+      });
+      this.workers.splice(ind, 1);
     }
   },
   watch: {
-    workerName(text){
+    // wyszukuje pracownika z listy
+    workerSearch(text){
       const pattern = new RegExp(text, 'i');
       const allWorkers = this.$store.getters.getWorkers;
       this.workers = allWorkers.filter(i => {
-        if(pattern.test(`${i.user.name} ${i.lastname}`)){
+        if(pattern.test(`${i.user.name} ${i.lastname} ${i.pesel}`)){
           return i;
         }
       });
     }
+  },
+  created(){
+    // dodaje pracownika do listy widoku po wysłaniu go na serwer
+    eventBus.$on('addUserToList', (user) => {
+      this.workers.push(user);
+    });
   }
 }
 </script>
@@ -72,11 +96,11 @@ export default {
 
 .workers-list-modal{
   @include flexColumn(flex-start, center);
-  padding-top: 50px;
+  padding-top: 20px;
 
   .add-worker{
     @include flexColumn;
-    margin-bottom: 30px;
+    margin: 20px 0 30px 0;
 
     button{
       @include buttonWhite;
@@ -91,6 +115,7 @@ export default {
 
     input{
       @include inputWhite;
+      margin-top: 10px;
     }
   }
 
@@ -98,12 +123,22 @@ export default {
 
 
     li{
-      margin-bottom: 10px;
+      @include flexRow(space-between, center);
+      border: 1px solid black;
+      background: #fff;
+      padding: 4px 10px;
+      margin-bottom: 2px;
 
       button{
         @include buttonWhite;
         padding: 1px 6px;
-        margin-left: 20px;
+        margin-left: 5px;
+        background: rgb(253, 114, 114);
+      }
+      button:first-child{
+        @include buttonWhite;
+        margin-left: 30px;
+        background: rgb(125, 204, 125);
       }
     }
   }
