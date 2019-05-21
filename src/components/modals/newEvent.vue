@@ -1,6 +1,7 @@
 <template>
   <div class="add-event-modal modal-window">
     <close-button></close-button>
+    <h2>Dodaj Nieobecność</h2>
     <form @submit.prevent="addEvent">
       <label for="worker">Pracownik</label>
       <select class="mb" id="worker" v-model="eWorkerId" required>
@@ -85,11 +86,13 @@ export default {
 
 .add-event-modal{
   @include flexColumn;
+  padding-top: 20px;
 
   form{
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-top: 20px;
 
     input, select{
       @include inputWhite;
