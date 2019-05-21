@@ -119,38 +119,34 @@ export default {
     }
   },
   created(){
-    //  usunięcie placownika z listy w obecnym widoku
-    eventBus.$on('deleteWorkerSuccess', (workerId) => {
-      const ind = this.workers.findIndex(el => {
-        return el.id == workerId;
-      });
-      this.workers.splice(ind, 1);
-    });
 
-    eventBus.$on('workerAdd', (data, edit, newUser) => {
-      if(data){
-        if(edit){
-          this.actionInfo = 'Zapisano zmiany';
-          this.cleanEditWorker(true);
-        }
-        else{
-          this.actionInfo = 'Dodano pracownika';
-          const worker = newUser;
-          worker.user = {
-            name: worker.name,
-            email: worker.email
-          };
-          delete worker.name;
-          delete worker.email;
-          // dodanie placownika do listy w aktualnym widoku
-          this.workers.push(worker);
+    // zmiany po poprawnym dodaniu/edycji pracownika
+    eventBus.$on('workerAction', (actionType) => {
+
+      if(actionType === 'added'){
+        this.actionInfo = 'Dodano pracownika';
+        this.$nextTick(() => {
+          this.workers = this.$store.getters.getWorkers;
           this.editWorkerSwitch();
-        }
+        })
       }
-      else{
-        this.actionInfo = 'Wystąpił błąd, spróbuj jeszcze raz'
+      else if(actionType === 'edited'){
+        this.actionInfo = 'Zapisano zmiany';
+        this.$nextTick(() => {
+          this.workers = this.$store.getters.getWorkers;
+          this.cleanEditWorker(true);
+        })
       }
-      // pokazuje komunikat po dodaniu workera
+      else if(actionType === 'deleted'){
+        this.actionInfo = 'Usunięto pracownika';
+        this.$nextTick(() => {
+          this.workers = this.$store.getters.getWorkers;
+        })
+      }
+      else if(actionType === 'error'){
+        this.actionInfo = 'Wystąpił błąd po stronie serwera.\nSpróbuj jeszcze raz.\nJeśli błąd się powtarza, zgłoś to administratorowi.'
+      }
+
       this.actionShow = true;
       setTimeout(() => {
         this.actionShow = false;        
