@@ -3,9 +3,9 @@
     <close-button></close-button>
     <h2>Lista Pracowników</h2>
     <div class="add-worker">
-      <button @click="addWorkerSwitch">{{addWorkerText}}</button>
-      <div v-if="addWorkerOn">
-        <add-user-form v-bind:userType="'worker'"></add-user-form>
+      <button @click="editWorkerSwitch">{{editWorkerText}}</button>
+      <div v-if="editWorkerOn">
+        <add-worker-form v-bind:workerData="editWorkerData"></add-worker-form>
       </div>
     </div>
     <form class="search-worker--form">
@@ -21,52 +21,89 @@
         </div>
       </li>
     </ul>
+    <div v-if="actionShow" class="action-info">
+      <h4>{{actionInfo}}</h4>
+    </div>
   </div>
 </template>
 
 <script>
 import closeButton from './modals-elements/closeButton.vue';
-import addUserForm from './modals-elements/addUserForm.vue';
+import addWorkerForm from './modals-elements/addWorkerForm.vue';
 import { eventBus } from '../../main';
 
 export default {
   components:{
     'close-button': closeButton,
-    'add-user-form': addUserForm
+    'add-worker-form': addWorkerForm
   },
   data(){
     return {
       workers: this.$store.getters.getWorkers,
       showList: true,
       workerSearch: '',
-      addWorkerOn: false,
-      addWorkerText: 'Dodaj pracownika'
+      editWorkerOn: false,
+      editWorkerTrue: false,
+      editWorkerData: {},
+      editWorkerText: 'Dodaj pracownika',
+      actionShow: false,
+      actionInfo: '',
     }
   },
   methods: {
-    addWorkerSwitch(){
-      this.addWorkerOn = !this.addWorkerOn;
-      if(this.addWorkerOn){
-        this.addWorkerText = 'Zamknij panel';
+    editWorkerSwitch(){
+      this.editWorkerOn = !this.editWorkerOn;
+      if(this.editWorkerOn){
+        this.editWorkerText = 'Zamknij panel';
       }
       else{
-        this.addWorkerText = 'Dodaj pracownika';
+        this.editWorkerText = 'Dodaj pracownika';
+
+        if(this.editWorkerTrue){
+          this.cleanEditWorker(false);
+        }
       }
     },
     editWorker(e){
       const workerId = e.target.attributes['data-id'].value;
-      console.log(`edit worker: id ${workerId}`);
+
+      const workerToEdit = this.workers.filter(worker => {
+        return worker.id === +workerId;
+      })[0];
+
+      if(this.editWorkerOn){
+        this.editWorkerSwitch();
+        this.editWorkerTrue = true;
+        this.editWorkerData = workerToEdit;
+        this.$nextTick(() => {
+          this.editWorkerSwitch();
+        });
+      }
+      else{
+        this.editWorkerTrue = true;
+        this.editWorkerData = workerToEdit;
+        this.editWorkerSwitch();
+      }
+    },
+    cleanEditWorker(e){
+      this.editWorkerTrue = false;
+      this.editWorkerData = {};
+      if(e){
+        this.editWorkerSwitch();
+      }
     },
     deleteWorker(e){
       const workerId = e.target.attributes['data-id'].value;
-      // console.log(`delete worker: id ${workerId}`);
-      this.$store.dispatch('deleteUser', {userType: 'worker', id: workerId});
+      const workerToDelete = this.workers.filter(worker => {
+        return worker.id === +workerId;
+      })[0];
 
-      //  usunięcie placownika z listy w obecnym widoku
-      const ind = this.workers.findIndex(el => {
-        return el.id == workerId;
-      });
-      this.workers.splice(ind, 1);
+      const confirmDelete = confirm(`Usunąć pracownika?\n${workerToDelete.user.name} ${workerToDelete.lastname} (${workerToDelete.pesel})`);
+
+      if(confirmDelete){
+        this.$store.dispatch('deleteUser', {userType: 'worker', id: workerId});
+
+      }
     }
   },
   watch: {
@@ -82,9 +119,42 @@ export default {
     }
   },
   created(){
-    // dodaje pracownika do listy widoku po wysłaniu go na serwer
-    eventBus.$on('addUserToList', (user) => {
-      this.workers.push(user);
+    //  usunięcie placownika z listy w obecnym widoku
+    eventBus.$on('deleteWorkerSuccess', (workerId) => {
+      const ind = this.workers.findIndex(el => {
+        return el.id == workerId;
+      });
+      this.workers.splice(ind, 1);
+    });
+
+    eventBus.$on('workerAdd', (data, edit, newUser) => {
+      if(data){
+        if(edit){
+          this.actionInfo = 'Zapisano zmiany';
+          this.cleanEditWorker(true);
+        }
+        else{
+          this.actionInfo = 'Dodano pracownika';
+          const worker = newUser;
+          worker.user = {
+            name: worker.name,
+            email: worker.email
+          };
+          delete worker.name;
+          delete worker.email;
+          // dodanie placownika do listy w aktualnym widoku
+          this.workers.push(worker);
+          this.editWorkerSwitch();
+        }
+      }
+      else{
+        this.actionInfo = 'Wystąpił błąd, spróbuj jeszcze raz'
+      }
+      // pokazuje komunikat po dodaniu workera
+      this.actionShow = true;
+      setTimeout(() => {
+        this.actionShow = false;        
+      },5000);
     });
   }
 }
@@ -141,6 +211,15 @@ export default {
         background: rgb(125, 204, 125);
       }
     }
+  }
+
+
+  .action-info{
+    position: fixed;
+    left: 10px;
+    top: 200px;
+    background: #fff;
+    padding: 10px 15px;
   }
 
 }

@@ -225,31 +225,56 @@ export const store = new Vuex.Store({
       .catch(err => { console.log(err); });
     },
     sendUser(context, newUser){
-      // console.log(newUser);
-
+      // userType worker
       if(newUser.userType === 'worker'){
         context.state.vue.$http.post('workers', newUser.userData)
         .then(res => {
           context.dispatch('fetchWorkers'); 
-          // $on w komponencie addUser
-          eventBus.$emit('workerAdd', true);
+          // $on w komponencie workersList
+          eventBus.$emit('workerAdd', true, false, newUser.userData);
         })
         .catch(err => {
           console.log(err);
-          // $on w komponencie addUser
+          // $on w komponencie workersList
           eventBus.$emit('workerAdd', false);
         });
       }
+
+      // userType employer
       
     },
+    editUser(context, user){
+      // userType worker
+      if(user.userType === 'worker'){
+        context.state.vue.$http.put(`workers/${user.userData.id}`, user.userData)
+        .then(res => {
+          context.dispatch('fetchWorkers'); 
+          // $on w komponencie workersList
+          eventBus.$emit('workerAdd', true, true);
+        })
+        .catch(err => {
+          console.log(err);
+          // $on w komponencie workersList
+          eventBus.$emit('workerAdd', false);
+        });
+      }
+
+      // userType employer
+
+    },
     deleteUser(context, user){
+      // userType worker
       if(user.userType === 'worker'){
         context.state.vue.$http.delete(`workers/${user.id}`)
         .then(res => {
-          context.dispatch('fetchWorkers'); 
+          context.dispatch('fetchWorkers');
+          eventBus.$emit('deleteWorkerSuccess', user.id);
         })
-        .catch(err => { console.log(err); });
+        .catch(err => console.log(err));
       }
+
+      // userType employer
+
     }
   }
 });
