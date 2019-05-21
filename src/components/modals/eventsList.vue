@@ -3,8 +3,8 @@
     <close-button></close-button>
     <h2>Lista Nieobecności</h2>
     <form class="search-event--form">
-      <label for="search-event--input">Wyszukaj</label>
-      <input type="text" id="search-event--input" v-model="workerName" title="Podaj imię, nazwisko, pesel lub typ nieobecności.">
+      <label for="search-event--input">Wyszukaj - podaj imię, nazwisko, pesel lub typ nieobecności</label>
+      <input type="text" id="search-event--input" v-model="workerName">
     </form>
     <ul>
       <li class="events-item" v-for="event in currentEvents" :key="event.id">
