@@ -17,8 +17,11 @@
       <input class="mb" id="eEnd" type="date" v-model="eEnd" required>
       <button>Dodaj</button>
     </form>
-    <ul>
-      <li v-for="i in legend" :key="i.id">{{i.name}} - {{i.display_name}}</li>
+    <ul class="legend-list">
+      <li class="legend-item" v-for="i in legend" :key="i.id">
+        <span>{{i.name}}</span>
+        <span>{{i.display_name}}</span>
+      </li>
     </ul>
   </div>
 </template>
@@ -108,9 +111,22 @@ export default {
     }
   }
 
-  ul{
+  .legend-list{
+    height: 40vh;
     margin-top: 50px;
+    overflow-y: scroll;
     list-style-type: none;
+
+    .legend-item{
+      @include flexRow(flex-start, center);
+      border: 1px solid black;
+      background: #fff;
+      padding: 4px 10px;
+
+      span:first-child{
+        width: 120px;
+      }
+    }
   }
 }
 </style>
