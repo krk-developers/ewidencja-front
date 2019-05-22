@@ -9,13 +9,24 @@
       </div>
     </div>
     <form class="search-worker--form">
-      <label for="search-worker--input">Wyszukaj - podaj imię, nazwisko lub PESEL</label>
-      <input type="text" id="search-worker--input" v-model="workerSearch">
+      <label for="search-worker--input">Wyszukaj - podaj nazwisko, imie, PESEL, lub datę rozpoczęcia/zakończenia umowy</label>
+      <input type="search" id="search-worker--input" v-model="workerSearch">
     </form>
     <ul v-if="showList" class="workers-list">
-      <li v-for="worker in workers" :key="worker.pesel">
-        <span>{{worker.user.name}} {{worker.lastname}}&#8195;({{worker.pesel}})&#8195;&#8212;&#8195;{{worker.user.email}}</span>
-        <div>
+      <li class="worker-item" v-for="worker in workers" :key="worker.pesel">
+        <div class="worker-data">
+          <div>
+            <span class="name-pesel">{{worker.lastname}} {{worker.user.name}}&#8195;({{worker.pesel}})</span>
+            <span class="email">{{worker.user.email}}</span>
+            <span>wymiar etatu: {{worker.part_time}}</span>
+          </div>
+          <div>
+            <span class="contract">Umowa: {{fixContractFrom(worker)}} - {{fixContractTo(worker)}}</span>
+            <span class="effective">liczba efektywna: {{worker.effective}}</span>
+            <span>ekwiwalent: {{worker.equivalent_amount}}</span>
+          </div>
+        </div>
+        <div class="worker-buttons">
           <button @click="editWorker" :data-id="worker.id">edytuj</button>
           <button @click="deleteWorker" :data-id="worker.id">usuń</button>
         </div>
@@ -23,6 +34,8 @@
     </ul>
     <div v-if="actionShow" class="action-info">
       <h4>{{actionInfo}}</h4>
+      <h4 v-show="errorInfo">{{errorInfo1}}</h4>
+      <h4 v-show="errorInfo">{{errorInfo2}}</h4>
     </div>
   </div>
 </template>
@@ -31,6 +44,7 @@
 import closeButton from './modals-elements/closeButton.vue';
 import addWorkerForm from './modals-elements/addWorkerForm.vue';
 import { eventBus } from '../../main';
+import { setTimeout } from 'timers';
 
 export default {
   components:{
@@ -48,6 +62,9 @@ export default {
       editWorkerText: 'Dodaj pracownika',
       actionShow: false,
       actionInfo: '',
+      errorInfo: false,
+      errorInfo1: 'Spróbuj jeszcze raz.',
+      errorInfo2: 'Jeśli błąd się powtarza, zgłoś to administratorowi.'
     }
   },
   methods: {
@@ -104,6 +121,29 @@ export default {
         this.$store.dispatch('deleteUser', {userType: 'worker', id: workerId});
 
       }
+    },
+    fixContractFrom(worker){
+      if(worker.contract_from === '2001-01-01'){
+        return 'brak';
+      }
+      else{
+        return worker.contract_from;
+      }
+    },
+    fixContractTo(worker){
+      if(!worker.contract_to){
+        return 'brak';
+      }
+      else{
+        return worker.contract_to;
+      }
+    },
+    searchAgain(){
+      const text = this.workerSearch;
+      this.workerSearch = '';
+      setTimeout(() => {
+        this.workerSearch = text;
+      }, 0);
     }
   },
   watch: {
@@ -112,7 +152,7 @@ export default {
       const pattern = new RegExp(text, 'i');
       const allWorkers = this.$store.getters.getWorkers;
       this.workers = allWorkers.filter(i => {
-        if(pattern.test(`${i.user.name} ${i.lastname} ${i.pesel}`)){
+        if(pattern.test(`${i.lastname} ${i.user.name} ${i.pesel} ${i.contract_from} ${i.contract_to}`)){
           return i;
         }
       });
@@ -135,6 +175,9 @@ export default {
         this.$nextTick(() => {
           this.workers = this.$store.getters.getWorkers;
           this.cleanEditWorker(true);
+          if(this.workerSearch !== ''){
+            this.searchAgain();
+          }
         })
       }
       else if(actionType === 'deleted'){
@@ -144,12 +187,14 @@ export default {
         })
       }
       else if(actionType === 'error'){
-        this.actionInfo = 'Wystąpił błąd po stronie serwera.\nSpróbuj jeszcze raz.\nJeśli błąd się powtarza, zgłoś to administratorowi.'
+        this.actionInfo = 'Wystąpił błąd po stronie serwera.'
+        this.errorInfo = true;
       }
 
       this.actionShow = true;
       setTimeout(() => {
-        this.actionShow = false;        
+        this.actionShow = false;
+        this.errorInfo = false;
       },5000);
     });
   }
@@ -188,25 +233,60 @@ export default {
   .workers-list{
 
 
-    li{
+    .worker-item{
       @include flexRow(space-between, center);
       border: 1px solid black;
       background: #fff;
       padding: 4px 10px;
       margin-bottom: 2px;
 
-      button{
-        @include buttonWhite;
-        padding: 1px 6px;
-        margin-left: 5px;
-        background: rgb(253, 114, 114);
+      .worker-data{
+
+        div:first-child{
+          margin-bottom: 3px;
+        }
+
+        span{
+          display: inline-block;
+          border-right: 1px solid #000;
+          margin-right: 15px;
+          padding-right: 10px;
+        }
+        .name-pesel{
+          min-width: 255px;
+        }
+        .email{
+          min-width: 170px;
+        }
+        .contract{
+          min-width: 255px;
+        }
+        .effective{
+          min-width: 170px;
+        }
+        div span:last-child{
+          border: none;
+          padding: 0;
+          margin: 0;
+        }
       }
-      button:first-child{
-        @include buttonWhite;
-        margin-left: 30px;
-        background: rgb(125, 204, 125);
+
+      .worker-buttons{
+
+        button{
+          @include buttonWhite;
+          padding: 3px 6px;
+          margin-left: 5px;
+          background: rgb(253, 114, 114);
+        }
+        button:first-child{
+          @include buttonWhite;
+          margin-left: 20px;
+          background: rgb(125, 204, 125);
+        }
       }
-    }
+
+    }  // .worker-item
   }
 
 

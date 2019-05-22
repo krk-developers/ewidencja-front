@@ -79,8 +79,6 @@ export default {
         this.newWorker.contract_from = '2001-01-01';
       }
 
-      console.log('send worker', this.newWorker);
-
       // edit worker
       if(this.workerData.pesel){
         this.newWorker.id = this.workerData.id;
@@ -95,7 +93,6 @@ export default {
 
     },
     checkIfEdit(){
-      console.log('edit worker', this.workerData);
       if(this.workerData.pesel){
         this.worker.name = this.workerData.user.name;
         this.worker.lastname = this.workerData.lastname;

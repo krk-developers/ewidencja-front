@@ -250,7 +250,6 @@ export const store = new Vuex.Store({
       if(user.userType === 'worker'){
         context.state.vue.$http.put(`workers/${user.userData.id}`, user.userData)
         .then(res => {
-          console.log(res);
           context.dispatch('fetchWorkers', 'edited'); 
           // $on w komponencie workersList
         })
