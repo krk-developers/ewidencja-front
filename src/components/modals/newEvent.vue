@@ -28,7 +28,8 @@
 
 <script>
 import closeButton from './modals-elements/closeButton.vue';
-import {eventBus} from '../../main.js';
+import { eventBus } from '../../main.js';
+import { fixUpEndDate } from '../../store/modules.js';
 
 export default {
   components:{
@@ -71,13 +72,17 @@ export default {
 
       newEvent.title = `${legendElem.name} - ${worker.user.name} ${worker.lastname} (${worker.pesel})`;
 
-      this.$store.dispatch('fixEndDate', this.eEnd)
-        .then(res => {
-          newEvent.end = res;
+      // this.$store.dispatch('fixUpEndDate', this.eEnd)
+      //   .then(res => {
+      //     newEvent.end = res;
 
-          this.$store.dispatch('sendEvent', newEvent);
-          this.$store.dispatch('toggleModal', false);
-      });
+      //     this.$store.dispatch('sendEvent', newEvent);
+      //     this.$store.dispatch('toggleModal', false);
+      // });
+      newEvent.end = fixUpEndDate(this.eEnd);
+      this.$store.dispatch('sendEvent', newEvent);
+      this.$store.dispatch('toggleModal', false);
+
     }
   }
 }

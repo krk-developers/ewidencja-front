@@ -49,6 +49,7 @@ import '@fullcalendar/list/main.css';
 
 // import {eventBus} from '../main.js';
 const moment = require('moment');
+import { fixDownEndDate } from '../store/modules.js'
 
 import newEvent from './modals/newEvent.vue';
 import eventsList from './modals/eventsList.vue';
@@ -134,12 +135,11 @@ export default {
           const start = moment(e.event.start).format('DD-MM-YYYY');
           if(e.event.end){
             const end = moment(e.event.end).format('YYYY-MM-DD');
-            title = `${e.event.title}\n${start}  -  ${vue.downEndDate(end)}`;
+            title = `${e.event.title}\n${start}  -  ${fixDownEndDate(end)}`;
           }
           else{
             title = `${e.event.title}\n${start}`;
           }
-          e.el.setAttribute('title', title);
 
           if(e.event.extendedProps.legend_name === 'DZUW'){
             e.el.classList.add('event-holiday');
@@ -151,6 +151,7 @@ export default {
           if(!e.isStart && e.isEnd){
             e.el.classList.add('event-end');
           }
+          e.el.setAttribute('title', title);
         },
         eventMouseEnter(e){
           const events = Array.from(document.querySelectorAll(`.event-id-${e.event.id}`));
@@ -170,40 +171,6 @@ export default {
       this.calendar.render();
       this.$store.commit('setCalendar', this.calendar);
       // this.eventsHover();
-    },
-    downEndDate(endDate){
-      const daysInMonth = moment(endDate.slice(0, 7), 'YYYY-MM').daysInMonth();
-      let endDay = +endDate.slice(8);
-      let endMonth = +endDate.slice(5, 7);
-      let endYear = +endDate.slice(0, 4);
-
-      if(endDay === 1){
-        if(endMonth === 1){
-          endYear--;
-          endMonth = 12;
-          endDay = 31;
-        }
-        else{
-          endMonth--;
-          endDay = daysInMonth;
-        }
-      }
-      else{
-        endDay--;
-      }
-
-      endYear = endYear.toString();
-      endMonth = endMonth.toString();
-      endDay = endDay.toString();
-      if(endMonth.length === 1){
-        endMonth = `0${endMonth}`;
-      }
-      if(endDay.length === 1){
-        endDay = `0${endDay}`;
-      }
-      
-      const fixedEnd = `${endDay}-${endMonth}-${endYear}`;
-      return fixedEnd;
     },
     eventsHover(){
       const events = Array.from(document.querySelectorAll('a.fc-event'));
