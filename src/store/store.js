@@ -75,12 +75,6 @@ export const store = new Vuex.Store({
     setLegend(state, data){
       state.legendLeave = data;
     },
-    setLegendHoliday(state, data){
-      // state.legendHoliday = data;
-    },
-    setLegendLeave(state, data){
-      // state.legendLeave = data;
-    },
     setUserTypes(state, data){
       state.userTypes = data;
       eventBus.$emit('getUserTypes');
@@ -107,13 +101,6 @@ export const store = new Vuex.Store({
         html.style.overflowX = 'hidden';
         context.commit('toggleModal', data);
       }
-    },
-    setLegend(context, data){
-      // const legendHoliday = data.filter(i => i.working_day === 0);
-      // context.commit('setLegendHoliday', legendHoliday);
-
-      // const legendLeave = data.filter(i => i.working_day === 1);
-      // context.commit('setLegendLeave', legendLeave);
     },
     fetchWorkers(context, actionType){
       const url = secretData.getWorkers;
@@ -143,12 +130,14 @@ export const store = new Vuex.Store({
     fetchLegend(context){
       context.state.vue.$http.get(secretData.getLegend)
       .then(res => {
-        // console.log(res);
-        context.commit('setLegend', res.body.data);
+        const legend = res.body.data.filter((i) => {
+          return i.name !== 'DZUW';
+        });
+        const sortedLegend = legend.sort((a,b) => {
+          return a.name.localeCompare(b.name);
+        });
+        context.commit('setLegend', sortedLegend);
       });
-
-      // const legend = legendData;
-      // context.dispatch('setLegend', legend.data);
     },
     fetchUserTypes(context){
       context.state.vue.$http.get(secretData.getUserTypes)
