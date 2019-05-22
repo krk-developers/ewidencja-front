@@ -4,17 +4,17 @@
     <h2>Dodaj Nieobecność</h2>
     <form @submit.prevent="addEvent">
       <label for="worker">Pracownik</label>
-      <select class="mb" id="worker" v-model="eWorkerId" required>
-        <option v-for="worker in workers" :key="worker.id" :value="worker.id">{{worker.user.name}} {{worker.lastname}} ({{worker.pesel}})</option>
+      <select class="input" id="worker" v-model="eWorkerId" required>
+        <option v-for="worker in workers" :key="worker.id" :value="worker.id">{{worker.lastname}} {{worker.user.name}} ({{worker.pesel}})</option>
       </select>
       <label for="type">Typ nieobecności</label>
-      <select class="mb" id="type" v-model="legendId" required>
+      <select class="input" id="type" v-model="legendId" required>
         <option v-for="i in legend" :key="i.id" :value="i.id">{{i.name}}</option>
       </select>
       <label for="eStart">Dzień rozpoczęcia</label>
-      <input class="mb" id="eStart" type="date" v-model="eStart" required>
+      <input class="input" id="eStart" type="date" v-model="eStart" required>
       <label for="eEnd">Dzień zakończenia</label>
-      <input class="mb" id="eEnd" type="date" v-model="eEnd" required>
+      <input class="input" id="eEnd" type="date" v-model="eEnd" required>
       <button>Dodaj</button>
     </form>
     <ul class="legend-list">
@@ -101,8 +101,8 @@ export default {
       @include inputWhite;
     }
 
-    .mb{
-      margin-bottom: 15px;
+    .input{
+      margin: 5px 0 15px 0;
     }
 
     button{
