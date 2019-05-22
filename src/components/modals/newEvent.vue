@@ -70,15 +70,8 @@ export default {
         }
       });
 
-      newEvent.title = `${legendElem.name} - ${worker.user.name} ${worker.lastname} (${worker.pesel})`;
+      newEvent.title = `${legendElem.name} - ${worker.lastname} ${worker.user.name} (${worker.pesel})`;
 
-      // this.$store.dispatch('fixUpEndDate', this.eEnd)
-      //   .then(res => {
-      //     newEvent.end = res;
-
-      //     this.$store.dispatch('sendEvent', newEvent);
-      //     this.$store.dispatch('toggleModal', false);
-      // });
       newEvent.end = fixUpEndDate(this.eEnd);
       this.$store.dispatch('sendEvent', newEvent);
       this.$store.dispatch('toggleModal', false);
