@@ -12,7 +12,7 @@
           {{event.title}}
         </span>
         <span>
-          {{event.start}}&#8195;&#8212;&#8195;{{event.end}}
+          {{event.start}}&#8195;&#8212;&#8195;{{fixEndDate(event.end)}}
         </span>
         </li>
     </ul>
@@ -21,6 +21,8 @@
 
 <script>
 import closeButton from './modals-elements/closeButton.vue';
+import { fixDownEndDate } from '../../store/modules.js'
+
 // import {eventBus} from '../../main.js';
 
 export default {
@@ -32,6 +34,15 @@ export default {
       leaveEvents: [],
       currentEvents: [],
       workerName: ''
+    }
+  },
+  methods: {
+    fixEndDate(end){
+      const data = fixDownEndDate(end)
+      const year = data.substr(6, 7);
+      const month = data.substr(3, 2);
+      const day = data.substr(0, 2);
+      return `${year}-${month}-${day}`;
     }
   },
   watch: {
