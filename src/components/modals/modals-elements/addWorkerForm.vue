@@ -82,13 +82,13 @@ export default {
       // edit worker
       if(this.workerData.pesel){
         this.newWorker.id = this.workerData.id;
-        this.$store.dispatch('editUser', {userType: 'worker', userData: this.newWorker});
+        this.$store.dispatch('editWorker', this.newWorker);
       }
       // add worker
       else{
         this.newWorker.password = "12345678";
         this.newWorker.password_confirmation = "12345678";
-        this.$store.dispatch('sendUser', {userType: 'worker', userData: this.newWorker});
+        this.$store.dispatch('addWorker', this.newWorker);
       }
 
     },

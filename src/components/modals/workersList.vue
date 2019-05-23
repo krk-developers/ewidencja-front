@@ -118,7 +118,7 @@ export default {
       const confirmDelete = confirm(`Usunąć pracownika?\n${workerToDelete.user.name} ${workerToDelete.lastname} (${workerToDelete.pesel})`);
 
       if(confirmDelete){
-        this.$store.dispatch('deleteUser', {userType: 'worker', id: workerId});
+        this.$store.dispatch('deleteWorker', workerId);
 
       }
     },

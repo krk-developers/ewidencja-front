@@ -3,7 +3,7 @@ import Vuex from 'vuex';
 
 import {eventBus} from '../main.js';
 const moment = require('moment');
-import * as secretData from '../secretData.js';
+import * as secret from '../secretData.js';
 
 Vue.use(Vuex);
 
@@ -103,7 +103,7 @@ export const store = new Vuex.Store({
       }
     },
     fetchWorkers(context, actionType){
-      const url = secretData.getWorkers;
+      const url = secret.getWorkers;
       context.state.vue.$http.get(url)
       .then(res => { 
         // sortowanie pracowników wg nazwiska
@@ -118,17 +118,14 @@ export const store = new Vuex.Store({
 
     },
     fetchEmployers(context){
-      const url = secretData.getEmployers;
+      const url = secret.getEmployers;
       context.state.vue.$http.get(url)
       .then(res => { context.commit('setEmployers', res.body.data) })
       .catch(err => { console.log(err); });
 
-      // const u = '{"data":[{"id":6,"name":"Jan","lastname":"Bąkowski","email":"janek@onet.pl","pesel":763445637456,"role_display_name":"Pracownik"},{"id":7,"name":"Jan","lastname":"Kowalski","email":"kowal@wp.pl","pesel":74030704836,"role_display_name":"Pracownik"},{"id":8,"name":"Edward","lastname":"Nowak","email":"nowak@o2.pl","pesel":995030704555,"role_display_name":"Pracownik"}]}';
-      // const workers = JSON.parse(u).data;
-      // context.commit('setWorkers', workers);
     },
     fetchLegend(context){
-      context.state.vue.$http.get(secretData.getLegend)
+      context.state.vue.$http.get(secret.getLegend)
       .then(res => {
         const legend = res.body.data.filter((i) => {
           return i.name !== 'DZUW';
@@ -137,29 +134,36 @@ export const store = new Vuex.Store({
           return a.name.localeCompare(b.name);
         });
         context.commit('setLegend', sortedLegend);
-      });
+      })
+      .catch(err => { console.log(err); });
+
     },
     fetchUserTypes(context){
-      context.state.vue.$http.get(secretData.getUserTypes)
+      context.state.vue.$http.get(secret.getUserTypes)
       .then(res => {
         context.commit('setUserTypes', res.body.data);
-      });
-    },
-    fetchEvents(context){
+      })
+      .catch(err => { console.log(err); });
 
-      context.state.vue.$http.get(secretData.getEvents)
+    },
+    //  events
+    fetchEvents(context){
+      context.state.vue.$http.get(secret.getEvents)
       .then(res => {
         const events = res.body.data;
 
-        context.state.vue.$http.get(secretData.getHolidays)
+        context.state.vue.$http.get(secret.getHolidays)
         .then(res => {
           const holidays = res.body.data;
           events.push(...holidays);
           context.commit('setEvents', events);
           context.state.calendar.refetchEvents();
-        });
+        })
+        .catch(err => { console.log(err); });
 
       })
+      .catch(err => { console.log(err); });
+
     },
     sendEvent(context, newEvent){
       const formatedEvent = {
@@ -170,69 +174,57 @@ export const store = new Vuex.Store({
         title: newEvent.title
       };
 
-      context.state.vue.$http.post(secretData.postEvent, formatedEvent)
+      context.state.vue.$http.post(secret.postEvent, formatedEvent)
       .then(res => {
         context.dispatch('fetchEvents'); 
       })
       .catch(err => { console.log(err); });
+
     },
     deleteEvent(context, id){
-      const url = secretData.deleteEvent + id;
+      const url = secret.deleteEvent + id;
       context.state.vue.$http.delete(url)
       .then(res => {
         context.dispatch('fetchEvents');
       })
       .catch(err => { console.log(err); });
-    },
-    sendUser(context, newUser){
-      // userType worker
-      if(newUser.userType === 'worker'){
-        context.state.vue.$http.post('workers', newUser.userData)
-        .then(res => {
-          context.dispatch('fetchWorkers', 'added');
-        })
-        .catch(err => {
-          console.log(err);
-          // $on w komponencie workersList
-          eventBus.$emit('workerAction', 'error');
-        });
-      }
 
-      // userType employer
+    },
+    //  workers
+    addWorker(context, newUser){
+      context.state.vue.$http.post(secret.postWorker, newUser)
+      .then(res => {
+        context.dispatch('fetchWorkers', 'added');
+      })
+      .catch(err => {
+        console.log(err);
+        // $on w komponencie workersList
+        eventBus.$emit('workerAction', 'error');
+      });
       
     },
-    editUser(context, user){
-      // userType worker
-      if(user.userType === 'worker'){
-        context.state.vue.$http.put(`workers/${user.userData.id}`, user.userData)
-        .then(res => {
-          context.dispatch('fetchWorkers', 'edited'); 
-          // $on w komponencie workersList
-        })
-        .catch(err => {
-          console.log(err);
-          // $on w komponencie workersList
-          eventBus.$emit('workerAction', 'error');
-        });
-      }
-
-      // userType employer
+    editWorker(context, user){
+      context.state.vue.$http.put(secret.putWorker+user.id, user)
+      .then(res => {
+        context.dispatch('fetchWorkers', 'edited'); 
+        // $on w komponencie workersList
+      })
+      .catch(err => {
+        console.log(err);
+        // $on w komponencie workersList
+        eventBus.$emit('workerAction', 'error');
+      });
 
     },
-    deleteUser(context, user){
-      // userType worker
-      if(user.userType === 'worker'){
-        context.state.vue.$http.delete(`workers/${user.id}`)
-        .then(res => {
-          context.dispatch('fetchWorkers', 'deleted');
-        })
-        .catch(err => {
-          console.log(err);
-          eventBus.$emit('workerAction', 'error');
-        });
-      }
-
-      // userType employer
+    deleteWorker(context, id){
+      context.state.vue.$http.delete(secret.deleteWorker+id)
+      .then(res => {
+        context.dispatch('fetchWorkers', 'deleted');
+      })
+      .catch(err => {
+        console.log(err);
+        eventBus.$emit('workerAction', 'error');
+      });
 
     }
   }
