@@ -4,6 +4,8 @@ import VueResource from 'vue-resource';
 import {store} from './store/store.js';
 // import CryptoJS from 'crypto-js';
 
+import { mainPath } from './secretData.js';
+
 Vue.config.productionTip = false
 
 Vue.use(VueResource);
@@ -32,7 +34,7 @@ Vue.use(VueResource);
 
 
 
-Vue.http.options.root = 'https://ewidencja.vipserv.org/backend/public/api/';
+Vue.http.options.root = mainPath;
 // Vue.http.headers.common['Authorization'] = 'Bearer ' + myencrypted.toString();
 
 export const eventBus = new Vue();
