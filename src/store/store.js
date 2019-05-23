@@ -102,28 +102,6 @@ export const store = new Vuex.Store({
         context.commit('toggleModal', data);
       }
     },
-    fetchWorkers(context, actionType){
-      const url = secret.getWorkers;
-      context.state.vue.$http.get(url)
-      .then(res => { 
-        // sortowanie pracowników wg nazwiska
-        const sortedWorkers = res.body.data.sort((a, b) => {
-          return a.lastname.localeCompare(b.lastname);
-        });
-        context.commit('setWorkers', sortedWorkers);
-        // $on w komponencie workersList
-        eventBus.$emit('workerAction', actionType);
-      })
-      .catch(err => { console.log(err); });
-
-    },
-    fetchEmployers(context){
-      const url = secret.getEmployers;
-      context.state.vue.$http.get(url)
-      .then(res => { context.commit('setEmployers', res.body.data) })
-      .catch(err => { console.log(err); });
-
-    },
     fetchLegend(context){
       context.state.vue.$http.get(secret.getLegend)
       .then(res => {
@@ -191,6 +169,21 @@ export const store = new Vuex.Store({
 
     },
     //  workers
+    fetchWorkers(context, actionType){
+      const url = secret.getWorkers;
+      context.state.vue.$http.get(url)
+      .then(res => { 
+        // sortowanie pracowników wg nazwiska
+        const sortedWorkers = res.body.data.sort((a, b) => {
+          return a.lastname.localeCompare(b.lastname);
+        });
+        context.commit('setWorkers', sortedWorkers);
+        // $on w komponencie workersList
+        eventBus.$emit('workerAction', actionType);
+      })
+      .catch(err => { console.log(err); });
+
+    },
     addWorker(context, newUser){
       context.state.vue.$http.post(secret.postWorker, newUser)
       .then(res => {
@@ -226,6 +219,54 @@ export const store = new Vuex.Store({
         eventBus.$emit('workerAction', 'error');
       });
 
-    }
+    },
+    //  employers
+    fetchEmployers(context, actionType){
+      const url = secret.getEmployers;
+      context.state.vue.$http.get(url)
+      .then(res => {
+        context.commit('setEmployers', res.body.data);
+        // $on w komponencie employersList
+        eventBus.$emit('employerAction', actionType);
+      })
+      .catch(err => { console.log(err); });
+
+    },
+    addEmployer(context, newEmployer){
+      context.state.vue.$http.post(secret.postEmployer, newEmployer)
+      .then(res => {
+        context.dispatch('fetchEmployers', 'added');
+      })
+      .catch(err => {
+        console.log(err);
+        // $on w komponencie employersList
+        eventBus.$emit('employerAction', 'error');
+      });
+      
+    },
+    editEmployer(context, employer){
+      context.state.vue.$http.put(secret.putEmployer+employer.id, employer)
+      .then(res => {
+        context.dispatch('fetchEmployers', 'edited'); 
+        // $on w komponencie employersList
+      })
+      .catch(err => {
+        console.log(err);
+        // $on w komponencie employersList
+        eventBus.$emit('employerAction', 'error');
+      });
+
+    },
+    deleteEmployer(context, id){
+      context.state.vue.$http.delete(secret.deleteEmployer+id)
+      .then(res => {
+        context.dispatch('fetchEmployers', 'deleted');
+      })
+      .catch(err => {
+        console.log(err);
+        eventBus.$emit('employerAction', 'error');
+      });
+
+    },
   }
 });
