@@ -2,7 +2,7 @@
   <div class="employers-list-modal modal-window">
     <close-button></close-button>
     <h2>Lista Pracodawców</h2>
-    <div class="add-employer">
+    <div v-if="!editWorkers" class="add-employer">
       <button @click="addEmployerSwitch">{{addEmployerText}}</button>
       <div v-if="addEmployerOn">
         <add-employer-form></add-employer-form>
@@ -12,14 +12,42 @@
       <div class="title-panel">
         <div>
           <h4>{{workersEmployer.company}}</h4>
-          <button @click="editWorkers = false">zamknij panel</button>
+          <button @click="editWorkersClose">Zamknij panel</button>
+          <button @click="addWorkerSwitch">{{addNewWorkerText}}</button>
         </div>
         <label>
-          Wyszukaj - podaj nazwisko lub imię
-          <input type="search" v-model="workerName">
+          Wyszukaj - podaj nazwisko lub imię 
+          <input v-if="!addNewWorker" type="search" v-model="workerName">
+          <input v-else type="search" v-model="workerNameNew">
         </label>
       </div>
-      <ul class="workers-list">
+      <ul v-if="addNewWorker" class="new-workers-list">
+        <form v-if="addNewWorkerForm" @submit.prevent="addWorker">
+          <div class="name-section">
+            <span>{{newContract.lastname}} {{newContract.name}} ({{newContract.pesel}})</span>
+            <label for="part-time">wymiar etatu
+              <select name="partTime" id="part-time" v-model="newContract.partTime" title="wymiar etatu pracownika">
+                <option value="1">1</option>
+                <option value="0.75">0.75</option>
+                <option value="0.5">0.5</option>
+                <option value="0.25">0.25</option>
+              </select>
+            </label>
+          </div>
+          <div class="contract">
+            <label for="">umowa od: <input type="text" v-model="newContract.contractFrom" placeholder="RRRR-MM-DD" title="data w formacie RRRR-MM-DD - np. 2012-12-30"></label>
+            <label for="">do: <input type="text" v-model="newContract.contractTo"  placeholder="RRRR-MM-DD" title="data w formacie RRRR-MM-DD - np. 2012-12-30"></label>
+            <button type="submit">Dodaj pracownika</button>
+          </div>
+        </form>
+        <div>
+          <li v-for="worker in workersList" :key="worker.id">
+            <span>{{worker.lastname}} {{worker.user.name}} ({{worker.pesel}})</span>
+            <button @click="selectWorker(worker)">zaznacz</button>
+          </li>
+        </div>
+      </ul>
+      <ul v-if="!addNewWorker" class="workers-list">
         <li v-for="worker in employerWorkers" :key="worker.id">
           <edit-employer-workers-form v-bind:worker="worker" v-bind:employer="workersEmployer"></edit-employer-workers-form>
         </li>
@@ -75,9 +103,25 @@ export default {
       addEmployerOn: false,
       addEmployerText: 'Dodaj pracodawcę',
       editWorkers: false,
+      addNewWorker: false,
+      addNewWorkerForm: false,
+      addNewWorkerText: 'Dodaj pracownika',
       workersEmployer: {},
       employerWorkers: [],
-      workerName: ''
+      workerName: '',
+      workersList: [],
+      freeWorkers: [],
+      workerNameNew: '',
+      newContract: {
+        name: '',
+        lastname: '',
+        pesel: '',
+        employerId: '',
+        workerId: '',
+        partTime: '',
+        contractFrom: '',
+        contractTo: ''
+      }
     }
   },
   methods: {
@@ -97,7 +141,15 @@ export default {
       });
       console.log(employer);
     },
+    editWorkersClose(){
+      this.editWorkers = false;
+      this.addNewWorker = false;
+      this.addNewWorkerForm = false;
+      this.workerName = '';
+      this.workerNameNew = '';
+    },
     editEmployerWorkers(e){
+      this.editWorkersClose();
       const employerId = e.target.attributes['data-id'].value;
       const employer = this.employers.find(emp => {
         return emp.id === +employerId;
@@ -110,6 +162,52 @@ export default {
     deleteEmployer(e){
       const employerId = e.target.attributes['data-id'].value;
       console.log(`delete employer: id ${employerId}`);
+    },
+    addWorkerSwitch(){
+      if(this.addNewWorker){
+        this.addNewWorker = false;
+        this.addNewWorkerText = 'Dodaj pracownika';
+      }
+      else{
+        this.addNewWorker = true;
+        this.addNewWorkerText = 'Pokaż pracowników';
+
+        this.freeWorkers = this.$store.getters.getWorkers.filter(worker => {
+          let exist = false;
+          for(const w of this.workersEmployer.workers){
+            if(worker.id === w.id){
+              exist = true
+            }
+          }
+          if(!exist){
+            return worker;
+          }
+        });
+        this.workersList = this.freeWorkers;
+      }
+
+      this.addNewWorkerForm = false;
+      this.newContract = {
+        name: '',
+        lastname: '',
+        pesel: '',
+        employerId: '',
+        workerId: '',
+        partTime: '',
+        contractFrom: '',
+        contractTo: ''
+      };
+    },
+    selectWorker(worker){
+      this.newContract.name = worker.user.name;
+      this.newContract.lastname = worker.lastname;
+      this.newContract.pesel = worker.pesel;
+      this.newContract.employerId = this.workersEmployer.id;
+      this.newContract.workerId = worker.id;
+      this.addNewWorkerForm = true;
+    },
+    addWorker(){
+      console.log(this.newContract);
     }
   },
   watch: {
@@ -126,6 +224,15 @@ export default {
       const pattern = new RegExp(text, 'i');
       const allWorkers = this.workersEmployer.workers;
       this.employerWorkers = allWorkers.filter(i => {
+        if(pattern.test(`${i.lastname} ${i.user.name}`)){
+          return i;
+        }
+      });
+    },
+    workerNameNew(text){
+      const pattern = new RegExp(text, 'i');
+      const allWorkers = this.freeWorkers;
+      this.workersList = allWorkers.filter(i => {
         if(pattern.test(`${i.lastname} ${i.user.name}`)){
           return i;
         }
@@ -152,7 +259,6 @@ export default {
       return emp;
     });
     this.employers = employersFull;
-    // console.log(this.employers);
 
   }
 }
@@ -179,21 +285,28 @@ export default {
 
   .workers-to-edit{
     border: 1px solid black;
+    margin: 20px 0;
 
     .title-panel{
       @include flexColumn;
       background: #fff;
-      padding: 10px 0 5px 0;
+      padding: 10px 0;
       border-bottom: 1px solid #000;
+      min-width: 500px; 
 
       div{
-        @include flexRow;
+        @include flexRow(space-between, center);
+        width: 100%;
         margin-bottom: 10px;
+        padding: 0 30px;
+
+        h4{
+          min-width: 130px;
+        }
 
         button{
           @include buttonWhite;
           padding: 5px 10px;
-          margin-left: 20px;
         }
       }
 
@@ -202,6 +315,54 @@ export default {
       }
 
     }
+
+    .new-workers-list{
+
+      button{
+        @include buttonWhite;
+        padding: 3px 6px;
+      }
+
+      form{
+        padding: 8px;
+        background: #fff;
+        border-bottom: 1px solid #000;
+
+        input, select{
+          @include inputWhite;
+          min-width: 50px;
+        }
+        input{
+          width: 105px;
+          min-width: 105px;
+        }
+
+        &>*{
+          @include flexRow(space-between, center);
+          width: 100%;
+        }
+
+        .name-section{
+          padding: 0 30px 0 20px;
+          margin-bottom: 5px;
+        }
+      }
+
+      &>div{
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      li{
+        @include flexRow(space-between, center);
+        background: #fff;
+        margin-top: 5px;
+        padding: 5px 20px;
+        border-top: 1px solid #000;
+        border-bottom: 1px solid #000;
+      }
+    }
+
     .workers-list{
       max-height: 360px;
       overflow-y: auto;
