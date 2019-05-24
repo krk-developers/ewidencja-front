@@ -32,11 +32,18 @@
     <ul class="employer-list">
       <li class="list-item" v-for="employer in employers" :key="employer.id">
         <div class="employer-info">
-          <span>{{employer.firstname}} {{employer.company}}, email: {{employer.email}}</span>
+          <div>
+            <span>{{employer.firstname}}</span><span>|</span><span>{{employer.company}}</span><span>|</span>
+            <span>{{employer.email}}</span><span>|</span><span>NIP</span>
+          </div>
+          <div>
+            <span>adres</span><span>|</span><span>miasto</span><span>|</span>
+            <span>kod pocztowy</span><span>|</span><span>województwo</span>
+          </div>
           <select class="employer-workers">
             <option class="employer-worker" v-for="worker in employer.workers" :key="worker.id">
-              <span>{{worker.lastname}} {{worker.user.name}} </span>
-              <span> umowa: 2019-05-20 - 2020-05-20 | wymiar etatu: 1</span>
+              <span class="name">{{worker.lastname}} {{worker.user.name}} ({{worker.pesel}})&#8195;|</span>
+              <span class="contract">&#8195;umowa: {{worker.contract_from}} - {{worker.contract_to}}&#8195;|&#8195;wymiar etatu: 1</span>
             </option>
           </select>
         </div>
@@ -133,6 +140,9 @@ export default {
       for(let w of workers){
         for(let we of w.employers){
           if(emp.id === we.id){
+            if(!w.contract_to){
+              w.contract_to = 'brak';
+            }
             works.push(w);
           }
         }
@@ -205,7 +215,7 @@ export default {
 
   .search-employer--form{
     @include flexColumn;
-    margin: 20px 0;
+    margin-bottom: 20px;
 
     input{
       @include inputWhite;
@@ -217,24 +227,45 @@ export default {
 
     .list-item{
       @include flexRow(space-between, center);
-      margin-bottom: 10px;
+      margin-bottom: 5px;
+      background: #fff;
+      border: 1px solid #000;
+      padding: 5px;
 
       .employer-info{
         @include flexColumn;
+
+        div{
+          @include flexRow(space-between, center);
+          width: 550px;
+          margin-bottom: 5px;
+        }
       }
 
       .employer-workers{
-        // padding-left: 30px;
+        @include inputWhite;
+        min-width: 600px;
+        cursor: pointer;
       }
 
       .buttons{
-        @include flexRow;
+        @include flexRow(space-around, center);
         flex-wrap: wrap;
-        width: 170px;
+        width: 150px;
+        margin-left: 10px;
 
         button{
           @include buttonWhite;
-          padding: 1px 6px;
+          padding: 2px 8px;
+          background: rgb(125, 204, 125);
+
+          &:nth-child(2){
+            background: rgb(253, 114, 114);
+          }
+
+          &:last-child{
+            margin-top: 20px;
+          }
         }
       }
     }
