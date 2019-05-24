@@ -1,20 +1,50 @@
 <template>
   <div class="employers-list-modal modal-window">
     <close-button></close-button>
+    <h2>Lista Pracodawców</h2>
     <div class="add-employer">
       <button @click="addEmployerSwitch">{{addEmployerText}}</button>
       <div v-if="addEmployerOn">
-        <add-user-form v-bind:userType="'employer'"></add-user-form>
+        <add-employer-form></add-employer-form>
       </div>
     </div>
+    <div v-if="editWorkers" class="workers-to-edit">
+      <div class="title-panel">
+        <div>
+          <h4>{{workersEmployer.company}}</h4>
+          <button @click="editWorkers = false">zamknij panel</button>
+        </div>
+        <label>
+          Wyszukaj - podaj nazwisko lub imię
+          <input type="search" v-model="workerName">
+        </label>
+      </div>
+      <ul class="workers-list">
+        <li v-for="worker in employerWorkers" :key="worker.id">
+          <edit-employer-workers-form v-bind:worker="worker" v-bind:employer="workersEmployer"></edit-employer-workers-form>
+        </li>
+      </ul>
+    </div>
     <form class="search-employer--form">
-      <label for="search-employer--input">Wpisz imię i nazwisko</label>
-      <input type="text" id="search-employer--input" v-model="employerName">
+      <label for="search-employer--input">Wyszukaj - podaj nazwę pracodawcy</label>
+      <input type="search" id="search-employer--input" v-model="employerName">
     </form>
     <ul class="employer-list">
-      <li v-for="employer in employers" :key="employer.id">
-        <span>{{employer.firstname}} {{employer.company}}, email: {{employer.email}}</span>
-        <button @click="deleteEmployer" :data-id="employer.id">usuń</button>
+      <li class="list-item" v-for="employer in employers" :key="employer.id">
+        <div class="employer-info">
+          <span>{{employer.firstname}} {{employer.company}}, email: {{employer.email}}</span>
+          <select class="employer-workers">
+            <option class="employer-worker" v-for="worker in employer.workers" :key="worker.id">
+              <span>{{worker.lastname}} {{worker.user.name}} </span>
+              <span> umowa: 2019-05-20 - 2020-05-20 | wymiar etatu: 1</span>
+            </option>
+          </select>
+        </div>
+        <div class="buttons">
+          <button @click="editEmployer" :data-id="employer.id">edytuj</button>
+          <button @click="deleteEmployer" :data-id="employer.id">usuń</button>
+          <button @click="editEmployerWorkers" :data-id="employer.id">edytuj pracowników</button>
+        </div>
       </li>
     </ul>
   </div>
@@ -22,19 +52,25 @@
 
 <script>
 import closeButton from './modals-elements/closeButton.vue';
-import addUserForm from './modals-elements/addUserForm.vue';
+import addEmployerForm from './modals-elements/addEmployerForm.vue';
+import editEmployerWorkersForm from './modals-elements/editEmployerWorkersForm.vue';
 
 export default {
   components:{
     'close-button': closeButton,
-    'add-user-form': addUserForm
+    'add-employer-form': addEmployerForm,
+    'edit-employer-workers-form': editEmployerWorkersForm
   },
   data(){
     return {
       employers: this.$store.getters.getEmployers,
       employerName: '',
       addEmployerOn: false,
-      addEmployerText: 'Dodaj pracodawcę'
+      addEmployerText: 'Dodaj pracodawcę',
+      editWorkers: false,
+      workersEmployer: {},
+      employerWorkers: [],
+      workerName: ''
     }
   },
   methods: {
@@ -47,6 +83,23 @@ export default {
         this.addEmployerText = 'Dodaj pracodawcę';
       }
     },
+    editEmployer(e){
+      const employerId = e.target.attributes['data-id'].value;
+      const employer = this.employers.find(emp => {
+        return emp.id === +employerId;
+      });
+      console.log(employer);
+    },
+    editEmployerWorkers(e){
+      const employerId = e.target.attributes['data-id'].value;
+      const employer = this.employers.find(emp => {
+        return emp.id === +employerId;
+      });
+      // console.log(employer);
+      this.workersEmployer = employer;
+      this.employerWorkers = employer.workers;
+      this.editWorkers = !this.editWorkers;
+    },
     deleteEmployer(e){
       const employerId = e.target.attributes['data-id'].value;
       console.log(`delete employer: id ${employerId}`);
@@ -57,11 +110,40 @@ export default {
       const pattern = new RegExp(text, 'i');
       const allEmployers = this.$store.getters.getEmployers;
       this.employers = allEmployers.filter(i => {
-        if(pattern.test(`${i.firstname} ${i.company}`)){
+        if(pattern.test(`${i.company}`)){
+          return i;
+        }
+      });
+    },
+    workerName(text){
+      const pattern = new RegExp(text, 'i');
+      const allWorkers = this.workersEmployer.workers;
+      this.employerWorkers = allWorkers.filter(i => {
+        if(pattern.test(`${i.lastname} ${i.user.name}`)){
           return i;
         }
       });
     }
+  },
+  created(){
+    const workers = this.$store.getters.getWorkers;
+
+    const employersFull = this.employers.map(emp => {
+      const works = [];
+      for(let w of workers){
+        for(let we of w.employers){
+          if(emp.id === we.id){
+            works.push(w);
+          }
+        }
+
+      }
+      emp.workers = works;
+      return emp;
+    });
+    this.employers = employersFull;
+    // console.log(this.employers);
+
   }
 }
 </script>
@@ -72,11 +154,11 @@ export default {
 
 .employers-list-modal{
   @include flexColumn(flex-start, center);
-  padding-top: 50px;
+  padding-top: 20px;
 
   .add-employer{
     @include flexColumn;
-    margin-bottom: 30px;
+    margin: 20px 0 30px 0;
 
     button{
       @include buttonWhite;
@@ -85,25 +167,75 @@ export default {
     }
   }
 
+  .workers-to-edit{
+    border: 1px solid black;
+
+    .title-panel{
+      @include flexColumn;
+      background: #fff;
+      padding: 10px 0 5px 0;
+      border-bottom: 1px solid #000;
+
+      div{
+        @include flexRow;
+        margin-bottom: 10px;
+
+        button{
+          @include buttonWhite;
+          padding: 5px 10px;
+          margin-left: 20px;
+        }
+      }
+
+      input{
+        @include inputWhite;
+      }
+
+    }
+    .workers-list{
+      max-height: 360px;
+      overflow-y: auto;
+      margin-top: 10px;
+
+      li:last-child div{
+        margin-bottom: 0;
+      }
+    }
+  }
+
   .search-employer--form{
     @include flexColumn;
-    margin-bottom: 20px;
+    margin: 20px 0;
 
     input{
       @include inputWhite;
+      margin-top: 10px;
     }
   }
 
   .employer-list{
 
-
-    li{
+    .list-item{
+      @include flexRow(space-between, center);
       margin-bottom: 10px;
 
-      button{
-        @include buttonWhite;
-        padding: 1px 6px;
-        margin-left: 20px;
+      .employer-info{
+        @include flexColumn;
+      }
+
+      .employer-workers{
+        // padding-left: 30px;
+      }
+
+      .buttons{
+        @include flexRow;
+        flex-wrap: wrap;
+        width: 170px;
+
+        button{
+          @include buttonWhite;
+          padding: 1px 6px;
+        }
       }
     }
   }
