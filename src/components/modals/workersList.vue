@@ -9,7 +9,7 @@
       </div>
     </div>
     <form class="search-worker--form">
-      <label for="search-worker--input">Wyszukaj - podaj nazwisko, imie, PESEL, lub datę rozpoczęcia/zakończenia umowy</label>
+      <label for="search-worker--input">Wyszukaj - podaj nazwisko, imie lub PESEL</label>
       <input type="search" id="search-worker--input" v-model="workerSearch">
     </form>
     <ul v-if="showList" class="workers-list">
@@ -186,7 +186,7 @@ export default {
       const pattern = new RegExp(text, 'i');
       const allWorkers = this.$store.getters.getWorkers;
       this.workers = allWorkers.filter(i => {
-        if(pattern.test(`${i.lastname} ${i.user.name} ${i.pesel} ${i.contract_from} ${i.contract_to}`)){
+        if(pattern.test(`${i.lastname} ${i.user.name} ${i.pesel}`)){
           return i;
         }
       });
