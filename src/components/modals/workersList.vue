@@ -32,10 +32,8 @@
         </div>
       </li>
     </ul>
-    <div v-if="actionShow" class="action-info">
-      <h4>{{actionInfo}}</h4>
-      <h4 v-show="errorInfo">{{errorInfo1}}</h4>
-      <h4 v-show="errorInfo">{{errorInfo2}}</h4>
+    <div v-if="notificationShow">
+      <notification :notification="notificationInfo"></notification>
     </div>
   </div>
 </template>
@@ -43,13 +41,15 @@
 <script>
 import closeButton from './modals-elements/closeButton.vue';
 import addWorkerForm from './modals-elements/addWorkerForm.vue';
+import notification from './modals-elements/notification.vue';
 import { eventBus } from '../../main';
 import { setTimeout } from 'timers';
 
 export default {
   components:{
     'close-button': closeButton,
-    'add-worker-form': addWorkerForm
+    'add-worker-form': addWorkerForm,
+    notification
   },
   data(){
     return {
@@ -60,11 +60,8 @@ export default {
       editWorkerTrue: false,
       editWorkerData: {},
       editWorkerText: 'Dodaj pracownika',
-      actionShow: false,
-      actionInfo: '',
-      errorInfo: false,
-      errorInfo1: 'Spróbuj jeszcze raz.',
-      errorInfo2: 'Jeśli błąd się powtarza, zgłoś to administratorowi.'
+      notificationShow: false,
+      notificationInfo: {},
     }
   },
   methods: {
@@ -144,6 +141,42 @@ export default {
       setTimeout(() => {
         this.workerSearch = text;
       }, 0);
+    },
+    showNotification(action){
+      if(action === 'added'){
+        this.notificationInfo.message = 'Dodano pracownika';
+        this.$nextTick(() => {
+          this.workers = this.$store.getters.getWorkers;
+          this.editWorkerSwitch();
+        })
+      }
+      else if(action === 'edited'){
+        this.notificationInfo.message = 'Zapisano zmiany';
+        this.$nextTick(() => {
+          this.workers = this.$store.getters.getWorkers;
+          this.cleanEditWorker(true);
+          if(this.workerSearch !== ''){
+            this.searchAgain();
+          }
+        })
+      }
+      else if(action === 'deleted'){
+        this.notificationInfo.message = 'Usunięto pracownika';
+        this.$nextTick(() => {
+          this.workers = this.$store.getters.getWorkers;
+        })
+      }
+      else if(action === 'error'){
+        this.notificationInfo.message = 'Wystąpił błąd po stronie serwera.'
+        this.notificationInfo.error = true;
+      }
+
+      this.notificationShow = true;
+      setTimeout(() => {
+        this.notificationShow = false;
+        this.notificationInfo = {};
+      },5000);
+
     }
   },
   watch: {
@@ -161,41 +194,8 @@ export default {
   created(){
 
     // zmiany po poprawnym dodaniu/edycji pracownika
-    eventBus.$on('workerAction', (actionType) => {
-
-      if(actionType === 'added'){
-        this.actionInfo = 'Dodano pracownika';
-        this.$nextTick(() => {
-          this.workers = this.$store.getters.getWorkers;
-          this.editWorkerSwitch();
-        })
-      }
-      else if(actionType === 'edited'){
-        this.actionInfo = 'Zapisano zmiany';
-        this.$nextTick(() => {
-          this.workers = this.$store.getters.getWorkers;
-          this.cleanEditWorker(true);
-          if(this.workerSearch !== ''){
-            this.searchAgain();
-          }
-        })
-      }
-      else if(actionType === 'deleted'){
-        this.actionInfo = 'Usunięto pracownika';
-        this.$nextTick(() => {
-          this.workers = this.$store.getters.getWorkers;
-        })
-      }
-      else if(actionType === 'error'){
-        this.actionInfo = 'Wystąpił błąd po stronie serwera.'
-        this.errorInfo = true;
-      }
-
-      this.actionShow = true;
-      setTimeout(() => {
-        this.actionShow = false;
-        this.errorInfo = false;
-      },5000);
+    eventBus.$on('workerAction', (action) => {
+      this.showNotification(action);
     });
   }
 }
