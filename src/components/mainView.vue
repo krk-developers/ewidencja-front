@@ -49,7 +49,7 @@ import '@fullcalendar/list/main.css';
 
 // import {eventBus} from '../main.js';
 const moment = require('moment');
-import { fixDownEndDate } from '../store/modules.js'
+import { fixDownEndDate, fixUpEndDate } from '../store/modules.js'
 
 import newEvent from './modals/newEvent.vue';
 import eventsList from './modals/eventsList.vue';
@@ -58,8 +58,6 @@ import workersList from './modals/workersList.vue';
 import employersList from './modals/employersList.vue';
 import adminsList from './modals/adminsList.vue';
 import superadminsList from './modals/superadminsList.vue';
-
-// import * as secretData from '../secretData.js';
 
 
 export default {
@@ -101,7 +99,14 @@ export default {
         },
         events(info, successCallback, failureCallback){
           if(info){
-            successCallback(vue.$store.getters.getEvents);
+            const endDatesFixedForCalendar = vue.$store.getters.getEvents.map(event => {
+              if(event.legend_name !== 'DZUW'){
+                event.end = fixUpEndDate(event.end);
+              }
+              return event;
+            });
+
+            successCallback(endDatesFixedForCalendar);
           }
           else{
             failureCallback();
@@ -123,12 +128,6 @@ export default {
           }
         },
         eventPositioned(e){
-          // console.log(e);
-
-          // if(e.event.extendedProps.grandType === 'holiday'){
-          //   e.el.classList.add('holiday-event');
-          // }
-
           e.el.classList.add(`event-id-${e.event.id}`);
 
           let title = '';
@@ -164,18 +163,12 @@ export default {
           events.map(el => {
             el.classList.remove('event-hovered')
           });
-        }
+        },
         // select(e){ console.log(e); }
       });
 
       this.calendar.render();
       this.$store.commit('setCalendar', this.calendar);
-      // this.eventsHover();
-    },
-    eventsHover(){
-      const events = Array.from(document.querySelectorAll('a.fc-event'));
-      
-      console.log(events);
     }
   },
   created(){

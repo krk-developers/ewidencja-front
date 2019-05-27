@@ -71,6 +71,7 @@ export default {
         workerId: this.eWorkerId,
         employerId: this.eEmployerId,
         start: this.eStart,
+        end: this.eEnd
       };
 
       const legendElem = this.legend.find(i => {
@@ -93,8 +94,7 @@ export default {
       });
 
       newEvent.title = `${legendElem.name} - ${worker.lastname} ${worker.user.name} (${worker.pesel}) - ${employer.company}`;
-
-      newEvent.end = fixUpEndDate(this.eEnd);
+      
       this.$store.dispatch('sendEvent', newEvent);
 
     },
