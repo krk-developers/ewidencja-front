@@ -148,6 +148,7 @@ export const store = new Vuex.Store({
         start: newEvent.start,
         end: newEvent.end,
         worker_id: newEvent.workerId,
+        employer_id: newEvent.employerId,
         legend_id: newEvent.legendId,
         title: newEvent.title
       };
@@ -155,8 +156,17 @@ export const store = new Vuex.Store({
       context.state.vue.$http.post(secret.postEvent, formatedEvent)
       .then(res => {
         context.dispatch('fetchEvents'); 
+        eventBus.$emit('newEventAction', 'added');
       })
-      .catch(err => { console.log(err); });
+      .catch(err => {
+        console.log(err);
+        if(err.body.errors && err.body.errors.legend_id){
+          eventBus.$emit('newEventAction', err.body.errors.legend_id);
+        }
+        else{
+          eventBus.$emit('newEventAction', 'error');
+        }
+      });
 
     },
     deleteEvent(context, id){
