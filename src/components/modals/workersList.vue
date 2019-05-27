@@ -18,10 +18,11 @@
           <div>
             <span class="name-pesel">{{worker.lastname}} {{worker.user.name}}&#8195;({{worker.pesel}})</span>
             <span class="email">{{worker.user.email}}</span>
-            <span>wymiar etatu: {{worker.part_time}}</span>
+            <!-- <span>wymiar etatu: {{worker.part_time}}</span> -->
           </div>
           <div>
-            <span class="contract">Umowa: {{fixContractFrom(worker)}} - {{fixContractTo(worker)}}</span>
+            <!-- <span class="contract">Umowa: {{fixContractFrom(worker)}} - {{fixContractTo(worker)}}</span> -->
+            <span class="employers">liczba pracodawców: {{worker.employers.length}}</span>
             <span class="effective">liczba efektywna: {{worker.effective}}</span>
             <span>ekwiwalent: {{worker.equivalent_amount}}</span>
           </div>
@@ -258,11 +259,11 @@ export default {
         .email{
           min-width: 170px;
         }
-        .contract{
-          min-width: 255px;
+        .employers{
+          min-width: 180px;
         }
         .effective{
-          min-width: 170px;
+          min-width: 155px;
         }
         div span:last-child{
           border: none;
