@@ -144,13 +144,8 @@ export default {
             e.el.classList.add('event-holiday');
           }
 
-          if(e.isStart && !e.isEnd){
-            e.el.classList.add('event-start');
-          }
-          if(!e.isStart && e.isEnd){
-            e.el.classList.add('event-end');
-          }
           e.el.setAttribute('title', title);
+          
         },
         eventMouseEnter(e){
           const events = Array.from(document.querySelectorAll(`.event-id-${e.event.id}`));
