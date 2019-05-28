@@ -3,28 +3,25 @@
     <close-button></close-button>
     <h2>Dodaj Nieobecność</h2>
     <form @submit.prevent="addEvent">
-      <label class="worker-label" for="workerAddEvent">Pracownik
-        <select class="input" id="workerAddEvent" v-model="eWorkerId" required>
+      <div class="form-grid">
+        <label for="workerAddEvent">Pracownik</label>
+        <select id="workerAddEvent" v-model="eWorkerId" required>
           <option v-for="worker in workers" :key="worker.id" :value="worker.id">{{worker.lastname}} {{worker.user.name}} ({{worker.pesel}})</option>
         </select>
-      </label>
-      <label class="employer-label" for="employerAddEvent">Pracodawca
-        <select class="input" id="employerAddEvent" v-model="eEmployerId" required>
+        <label for="employerAddEvent">Pracodawca</label>
+        <select id="employerAddEvent" v-model="eEmployerId" required>
           <option v-for="employer in employers" :key="employer.id" :value="employer.id">
             {{employer.company}}</option>
         </select>
-      </label>
-      <label class="type-label" for="type">Typ nieobecności
-        <select class="input" id="type" v-model="legendId" required>
+        <label for="type">Typ nieobecności</label>
+        <select id="type" v-model="legendId" required>
           <option v-for="i in legend" :key="i.id" :value="i.id">{{i.name}}</option>
         </select>
-      </label>
-      <label for="eStart">Dzień rozpoczęcia
-        <input class="input" id="eStart" type="date" v-model="eStart" required>
-      </label>
-      <label for="eEnd">Dzień zakończenia
-        <input class="input" id="eEnd" type="date" v-model="eEnd" required>
-      </label>
+        <label for="eStart">Dzień rozpoczęcia</label>
+        <input id="eStart" type="date" v-model="eStart" required>
+        <label for="eEnd">Dzień zakończenia</label>
+        <input id="eEnd" type="date" v-model="eEnd" required>
+      </div>
       <button>Dodaj</button>
     </form>
     <ul class="legend-list">
@@ -162,14 +159,10 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 30px;
 
     input, select{
       @include inputWhite;
-    }
-
-    .input{
-      margin: 5px 0 15px 0;
     }
 
     button{
@@ -177,14 +170,18 @@ export default {
       padding: 5px 10px;
     }
 
-    .worker-label{
-      margin-left: 140px;
-    }
-    .employer-label{
-      margin-left: 46px;
-    }
-    .type-label{
-      margin-left: 10px;
+    .form-grid{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      justify-items: start;
+      align-items: center;
+      grid-gap: 10px;
+      margin-bottom: 20px;
+      padding-right: 65px;
+
+      label{
+        justify-self: end;
+      }
     }
 
   }
