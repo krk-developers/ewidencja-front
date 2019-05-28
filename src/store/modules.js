@@ -37,7 +37,8 @@ const fixUpEndDate = (endDate) => {
 }
 
 const fixDownEndDate = (endDate) =>{
-  const daysInMonth = moment(endDate.slice(0, 7), 'YYYY-MM').daysInMonth();
+  const fixedMonth = fixDownMonth(endDate.slice(0, 7));
+  const daysInMonth = moment(fixedMonth, 'YYYY-MM').daysInMonth();
   let endDay = +endDate.slice(8);
   let endMonth = +endDate.slice(5, 7);
   let endYear = +endDate.slice(0, 4);
@@ -69,6 +70,23 @@ const fixDownEndDate = (endDate) =>{
   
   const fixedEnd = `${endDay}-${endMonth}-${endYear}`;
   return fixedEnd;
+}
+
+const fixDownMonth = (date) => {
+  const year = date.slice(0, 4);
+  let month = +date.slice(5);
+  if(month > 1){
+    month--;
+  }
+  else{
+    month = 12;
+  }
+  if(month < 10){
+    month = `0${month}`
+  }
+
+  return `${year}-${month}`;
+
 }
   
 export{fixUpEndDate, fixDownEndDate}
