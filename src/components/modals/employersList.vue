@@ -5,7 +5,7 @@
     <div v-if="!editWorkers" class="add-employer">
       <button @click="addEmployerSwitch">{{addEmployerText}}</button>
       <div v-if="addEmployerOn">
-        <add-employer-form></add-employer-form>
+        <add-employer-form :edit="editEmployerFlag" :employerData="employerToEdit"></add-employer-form>
       </div>
     </div>
     <div v-if="editWorkers" class="workers-to-edit">
@@ -102,6 +102,8 @@ export default {
       employerName: '',
       addEmployerOn: false,
       addEmployerText: 'Dodaj pracodawcę',
+      employerToEdit: {},
+      editEmployerFlag: false,
       editWorkers: false,
       addNewWorker: false,
       addNewWorkerForm: false,
@@ -208,6 +210,28 @@ export default {
     },
     addWorker(){
       console.log(this.newContract);
+    },
+    addWorkersToEmployer(){
+      const workers = this.$store.getters.getWorkers;
+
+      const employersFull = this.employers.map(emp => {
+        const works = [];
+        for(let w of workers){
+          for(let we of w.employers){
+            if(emp.id === we.id){
+              if(!w.contract_to){
+                w.contract_to = 'brak';
+              }
+              works.push(w);
+            }
+          }
+
+        }
+        emp.workers = works;
+        return emp;
+      });
+      this.employers = employersFull;
+
     }
   },
   watch: {
@@ -240,26 +264,7 @@ export default {
     }
   },
   created(){
-    const workers = this.$store.getters.getWorkers;
-
-    const employersFull = this.employers.map(emp => {
-      const works = [];
-      for(let w of workers){
-        for(let we of w.employers){
-          if(emp.id === we.id){
-            if(!w.contract_to){
-              w.contract_to = 'brak';
-            }
-            works.push(w);
-          }
-        }
-
-      }
-      emp.workers = works;
-      return emp;
-    });
-    this.employers = employersFull;
-
+    this.addWorkersToEmployer();
   }
 }
 </script>
