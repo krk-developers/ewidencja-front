@@ -167,10 +167,11 @@ export default {
     }
   },
   created(){
+    this.$store.dispatch('fetchEvents');
+    this.$store.dispatch('fetchLegend');
     this.$store.dispatch('fetchWorkers');
     this.$store.dispatch('fetchEmployers');
-    this.$store.dispatch('fetchLegend');
-    this.$store.dispatch('fetchEvents');
+    this.$store.dispatch('fetchProvinces');
   },
   mounted(){
     this.runCalendar();

@@ -16,6 +16,7 @@ export const store = new Vuex.Store({
     legendHoliday: [],
     legendLeave: [],
     userTypes: [],
+    provincesArray: [],
     eventsArray: [],
     workersArray: [],
     employersArray: [],
@@ -41,6 +42,9 @@ export const store = new Vuex.Store({
     },
     getUserTypes(state){
       return state.userTypes;
+    },
+    getProvinces(state){
+      return state.provincesArray;
     },
     getEvents(state){
       return state.eventsArray;
@@ -77,7 +81,10 @@ export const store = new Vuex.Store({
     },
     setUserTypes(state, data){
       state.userTypes = data;
-      eventBus.$emit('getUserTypes');
+      // eventBus.$emit('getUserTypes');
+    },
+    setProvinces(state, data){
+      state.provincesArray = data;
     },
     setEvents(state, data){
       state.eventsArray = data;
@@ -123,6 +130,13 @@ export const store = new Vuex.Store({
       })
       .catch(err => { console.log(err); });
 
+    },
+    fetchProvinces(context){
+      context.state.vue.$http.get(secret.getProvinces)
+      .then(res => {
+        context.commit('setProvinces', res.body.data);
+      })
+      .catch(err => { console.log(err); });
     },
     //  events
     fetchEvents(context){
