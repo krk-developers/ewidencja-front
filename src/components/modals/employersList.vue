@@ -115,9 +115,6 @@ export default {
       freeWorkers: [],
       workerNameNew: '',
       newContract: {
-        name: '',
-        lastname: '',
-        pesel: '',
         employerId: '',
         workerId: '',
         partTime: '',
@@ -219,7 +216,16 @@ export default {
       this.addNewWorkerForm = true;
     },
     addWorker(){
-      console.log(this.newContract);
+      const newContract = {
+        employer_id: this.newContract.employerId,
+        worker_id: this.newContract.workerId,
+        part_time: this.newContract.partTime,
+        contract_from: this.newContract.contractFrom,
+        contract_to: this.newContract.contractTo
+      };
+
+      this.$store.dispatch('addWorkerToEmployer', newContract);
+
     },
     addWorkersToEmployer(){
       const workers = this.$store.getters.getWorkers;

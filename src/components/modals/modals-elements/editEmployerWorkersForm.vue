@@ -16,7 +16,7 @@
       <label for="">do: <input type="text" v-model="contractTo" value="worker.contract_to" :disabled="editDisabled" title="data zakończenia umowy"></label>
     </div>
     <div class="buttons">
-      <button @click="saveWorker(worker)" :disabled="editDisabled">Zapisz zmiany</button>
+      <button @click="saveWorkerChanges()" :disabled="editDisabled">Zapisz zmiany</button>
       <button @click="editWorker(worker)">{{ editText }}</button>
       <button @click="deleteWorker(worker.id)">zwolnij pracownika</button>
     </div>
@@ -40,8 +40,17 @@ export default {
     }
   },
   methods: {
-    saveWorker(worker){
-      console.log('save worker');
+    saveWorkerChanges(){
+      const editedContract = {
+        employer_id: this.employer.id,
+        worker_id: this.worker.id,
+        part_time: this.partTime,
+        contract_from: this.contractFrom,
+        contract_to: this.contractTo
+      };
+      console.log("TCL: saveWorkerChanges -> editedContract", editedContract)
+
+      // this.$store.dispatch('editWorkerToEmployer', editedContract);
     },
     editWorker(){
       const dis = this.editDisabled;
@@ -49,7 +58,21 @@ export default {
       this.editDisabled = !dis;
     },
     deleteWorker(id){
-      console.log('delete worker id: ', id);
+      const data = {
+        employerId: this.employer.id,
+        workerId: id
+      }
+
+      const worker = this.$store.getters.getWorkers.filter(worker => {
+        if(worker.id === +id){
+          return worker;
+        }
+      })[0];
+
+      const confirmDelete = confirm(`Usunąć pracownika?\n${worker.lastname} ${worker.user.name} (${worker.pesel})\nZatrudnionego u ${this.employer.company}`);
+
+      this.$store.dispatch('deleteWorkerFromEmployer', data);
+
     }
   },
   created(){
