@@ -292,5 +292,28 @@ export const store = new Vuex.Store({
       });
 
     },
+    addWorkerToEmploywe(context, newContract){
+      context.state.vue.$http.post(`${secret.postEmployer}${newContract.employer_id}/workers`, newContract)
+      .then(res => {
+        context.dispatch('fetchEmployers', 'workerAdded');
+      })
+      .catch(err => {
+        console.log(err);
+        // $on w komponencie employersList
+        eventBus.$emit('employerAction', 'error');
+      });
+
+    },
+    deleteWorkerFromEmployer(context, data){
+      context.state.vue.$http.delete(`${secret.deleteEmployer}${data.employerId}/workers/${data.workerId}`)
+      .then(res => {
+        context.dispatch('fetchEmployers', 'workerDeleted');
+      })
+      .catch(err => {
+        console.log(err);
+        eventBus.$emit('employerAction', 'error');
+      });
+
+    }
   }
 });
