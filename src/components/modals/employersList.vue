@@ -163,7 +163,17 @@ export default {
     },
     deleteEmployer(e){
       const employerId = e.target.attributes['data-id'].value;
-      console.log(`delete employer: id ${employerId}`);
+      const employerToDelete = this.employers.filter(employer => {
+        return employer.id === +employerId;
+      })[0];
+      
+      const confirmDelete = confirm(`Usunąć pracodawcę?\n
+      ${employerToDelete.name} - ${employerToDelete.company} (${employerToDelete.nip}) - ${employerToDelete.email}`);
+
+      if(confirmDelete){
+        this.$store.dispatch('deleteEmployer', employerId);
+      }
+
     },
     addWorkerSwitch(){
       if(this.addNewWorker){
