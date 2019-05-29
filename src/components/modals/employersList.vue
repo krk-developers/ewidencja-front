@@ -82,6 +82,9 @@
         </div>
       </li>
     </ul>
+    <div v-if="notificationShow">
+      <notification :notification="notificationInfo"></notification>
+    </div>
   </div>
 </template>
 
@@ -89,12 +92,15 @@
 import closeButton from './modals-elements/closeButton.vue';
 import addEmployerForm from './modals-elements/addEmployerForm.vue';
 import editEmployerWorkersForm from './modals-elements/editEmployerWorkersForm.vue';
+import notification from './modals-elements/notification.vue';
+import { eventBus } from '../../main';
 
 export default {
   components:{
     'close-button': closeButton,
     'add-employer-form': addEmployerForm,
-    'edit-employer-workers-form': editEmployerWorkersForm
+    'edit-employer-workers-form': editEmployerWorkersForm,
+    notification
   },
   data(){
     return {
@@ -120,7 +126,9 @@ export default {
         partTime: '',
         contractFrom: '',
         contractTo: ''
-      }
+      },
+      notificationShow: false,
+      notificationInfo: {},
     }
   },
   methods: {
@@ -248,6 +256,46 @@ export default {
       });
       this.employers = employersFull;
 
+    },
+    showNotification(action){
+      console.log(action);
+      if(action === 'error'){
+        this.notificationInfo.message = 'Wystąpił błąd po stronie serwera.';
+        this.notificationInfo.error = true;
+      }
+      else{
+        this.employers = this.$store.getters.getEmployers;
+        this.addWorkersToEmployer();
+
+        if(action === 'added'){
+          this.notificationInfo.message = 'Dodano pracodawcę.';
+          this.addEmployerOn = false;
+        }
+        else if(action === 'edited'){
+          this.notificationInfo.message = 'Zapisano zmiany.';
+          this.addEmployerOn = false;
+        }
+        else if(action === 'deleted'){
+          this.notificationInfo.message = 'Usunięto pracodawcę.';
+        }
+        else if(action === 'workerAdded'){
+          this.notificationInfo.message = 'Dodano pracownika do pracodawcy.';
+        }
+        else if(action === 'workerEdited'){
+          this.notificationInfo.message = 'Zmieniono umowę pracownika.';
+        }
+        else if(action === 'workerDeleted'){
+          this.notificationInfo.message = 'Zwolniono pracownika.';
+        }
+
+      }
+
+      this.notificationShow = true;
+      setTimeout(() => {
+        this.notificationShow = false;
+        this.notificationInfo = {};
+      },5000);
+
     }
   },
   watch: {
@@ -281,6 +329,10 @@ export default {
   },
   created(){
     this.addWorkersToEmployer();
+
+    eventBus.$on('employerAction', (action) => {
+      this.showNotification(action);
+    });
   }
 }
 </script>
