@@ -292,10 +292,22 @@ export const store = new Vuex.Store({
       });
 
     },
-    addWorkerToEmploywe(context, newContract){
-      context.state.vue.$http.post(`${secret.postEmployer}${newContract.employer_id}/workers`, newContract)
+    addWorkerToEmployer(context, newContract){
+      context.state.vue.$http.post(`${secret.postEmployer}/${newContract.employer_id}/workers`, newContract)
       .then(res => {
         context.dispatch('fetchEmployers', 'workerAdded');
+      })
+      .catch(err => {
+        console.log(err);
+        // $on w komponencie employersList
+        eventBus.$emit('employerAction', 'error');
+      });
+
+    },
+    editWorkerToEmployer(context, newContract){
+      context.state.vue.$http.put(`${secret.postEmployer}/${newContract.employer_id}/workers`, newContract)
+      .then(res => {
+        context.dispatch('fetchEmployers', 'workerEdited');
       })
       .catch(err => {
         console.log(err);
