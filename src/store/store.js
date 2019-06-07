@@ -18,6 +18,7 @@ export const store = new Vuex.Store({
     userTypes: [],
     provincesArray: [],
     eventsArray: [],
+    eventsFixed: false,
     workersArray: [],
     employersArray: [],
     adminsArray: [{id: 1, firstname: 'Mariola', lastname: 'Honkisz', pesel: 84675675647567, email: 'mariola@test.pl'}],
@@ -48,6 +49,9 @@ export const store = new Vuex.Store({
     },
     getEvents(state){
       return state.eventsArray;
+    },
+    eventsFixed(state){
+      return state.eventsFixed;
     },
     getWorkers(state){
       return state.workersArray;
@@ -88,6 +92,9 @@ export const store = new Vuex.Store({
     },
     setEvents(state, data){
       state.eventsArray = data;
+    },
+    setEventsFixed(state, data){
+      state.eventsFixed = data;
     },
     setWorkers(state, workers){
       state.workersArray = workers;
@@ -149,6 +156,7 @@ export const store = new Vuex.Store({
           const holidays = res.body.data;
           events.push(...holidays);
           context.commit('setEvents', events);
+          context.commit('setEventsFixed', false);
           context.state.calendar.refetchEvents();
         })
         .catch(err => { console.log(err); });
