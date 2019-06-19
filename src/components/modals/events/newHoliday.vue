@@ -14,9 +14,9 @@
 </template>
 
 <script>
-import closeButton from './modals-elements/closeButton.vue';
+import closeButton from '../modals-elements/closeButton.vue';
 
-import {eventBus} from '../../main.js';
+import {eventBus} from '../../../main.js';
 
 export default {
   components:{
@@ -53,8 +53,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "../../sass/flexMixins.scss";
-@import "../../sass/elements.scss";
+@import "../../../sass/flexMixins.scss";
+@import "../../../sass/elements.scss";
 
 .add-holiday-modal{
   @include flexColumn;

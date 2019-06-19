@@ -37,10 +37,10 @@
 </template>
 
 <script>
-import closeButton from './modals-elements/closeButton.vue';
-import notification from './modals-elements/notification.vue';
-import { eventBus } from '../../main.js';
-import { fixUpEndDate } from '../../store/modules.js';
+import closeButton from '../modals-elements/closeButton.vue';
+import notification from '../modals-elements/notification.vue';
+import { eventBus } from '../../../main.js';
+import { fixUpEndDate } from '../../../store/modules.js';
 
 export default {
   components:{
@@ -148,8 +148,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "../../sass/flexMixins.scss";
-@import "../../sass/elements.scss";
+@import "../../../sass/flexMixins.scss";
+@import "../../../sass/elements.scss";
 
 .add-event-modal{
   @include flexColumn;

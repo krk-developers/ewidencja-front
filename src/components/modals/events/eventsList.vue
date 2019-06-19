@@ -20,8 +20,8 @@
 </template>
 
 <script>
-import closeButton from './modals-elements/closeButton.vue';
-import { fixDownEndDate } from '../../store/modules.js'
+import closeButton from '../modals-elements/closeButton.vue';
+import { fixDownEndDate } from '../../../store/modules.js'
 
 // import {eventBus} from '../../main.js';
 
@@ -68,8 +68,8 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../../sass/flexMixins.scss";
-@import "../../sass/elements.scss";
+@import "../../../sass/flexMixins.scss";
+@import "../../../sass/elements.scss";
 
 .events-list-modal{
   @include flexColumn;

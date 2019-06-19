@@ -51,13 +51,13 @@ import '@fullcalendar/list/main.css';
 const moment = require('moment');
 import { fixDownEndDate, fixUpEndDate } from '../store/modules.js'
 
-import newEvent from './modals/newEvent.vue';
-import eventsList from './modals/eventsList.vue';
-import newHoliday from './modals/newHoliday.vue';
-import workersList from './modals/workersList.vue';
-import employersList from './modals/employersList.vue';
-import adminsList from './modals/adminsList.vue';
-import superadminsList from './modals/superadminsList.vue';
+import newEvent from './modals/events/newEvent.vue';
+import eventsList from './modals/events/eventsList.vue';
+import newHoliday from './modals/events/newHoliday.vue';
+import workersList from './modals/workers/workersList.vue';
+import employersList from './modals/employers/employersList.vue';
+import adminsList from './modals/admins/adminsList.vue';
+import superadminsList from './modals/admins/superadminsList.vue';
 
 
 export default {

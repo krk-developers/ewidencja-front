@@ -21,8 +21,8 @@
 </template>
 
 <script>
-import closeButton from './modals-elements/closeButton.vue';
-import addUserForm from './modals-elements/addUserForm.vue';
+import closeButton from '../modals-elements/closeButton.vue';
+import addUserForm from '../modals-elements/addUserForm.vue';
 
 export default {
   components:{
@@ -67,8 +67,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "../../sass/flexMixins.scss";
-@import "../../sass/elements.scss";
+@import "../../../sass/flexMixins.scss";
+@import "../../../sass/elements.scss";
 
 .admins-list-modal{
   @include flexColumn(flex-start, center);

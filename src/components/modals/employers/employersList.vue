@@ -89,11 +89,11 @@
 </template>
 
 <script>
-import closeButton from './modals-elements/closeButton.vue';
-import addEmployerForm from './modals-elements/addEmployerForm.vue';
-import editEmployerWorkersForm from './modals-elements/editEmployerWorkersForm.vue';
-import notification from './modals-elements/notification.vue';
-import { eventBus } from '../../main';
+import closeButton from '../modals-elements/closeButton.vue';
+import addEmployerForm from './addEmployerForm.vue';
+import editEmployerWorkersForm from './editEmployerWorkersForm.vue';
+import notification from '../modals-elements/notification.vue';
+import { eventBus } from '../../../main';
 
 export default {
   components:{
@@ -339,8 +339,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "../../sass/flexMixins.scss";
-@import "../../sass/elements.scss";
+@import "../../../sass/flexMixins.scss";
+@import "../../../sass/elements.scss";
 
 .employers-list-modal{
   @include flexColumn(flex-start, center);

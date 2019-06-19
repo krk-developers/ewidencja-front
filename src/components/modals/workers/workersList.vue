@@ -40,10 +40,10 @@
 </template>
 
 <script>
-import closeButton from './modals-elements/closeButton.vue';
-import addWorkerForm from './modals-elements/addWorkerForm.vue';
-import notification from './modals-elements/notification.vue';
-import { eventBus } from '../../main';
+import closeButton from '../modals-elements/closeButton.vue';
+import addWorkerForm from './addWorkerForm.vue';
+import notification from '../modals-elements/notification.vue';
+import { eventBus } from '../../../main';
 import { setTimeout } from 'timers';
 
 export default {
@@ -203,8 +203,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "../../sass/flexMixins.scss";
-@import "../../sass/elements.scss";
+@import "./../../../sass/flexMixins.scss";
+@import "./../../../sass/elements.scss";
 
 .workers-list-modal{
   @include flexColumn(flex-start, center);
