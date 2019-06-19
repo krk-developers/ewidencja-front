@@ -5,7 +5,7 @@
     <div v-if="!editWorkers" class="add-employer">
       <button @click="addEmployerSwitch">{{addEmployerText}}</button>
       <div v-if="addEmployerOn">
-        <add-employer-form :edit="editEmployerFlag" :employerData="employerToEdit"></add-employer-form>
+        <add-edit-employer-form :edit="editEmployerFlag" :employerData="employerToEdit"></add-edit-employer-form>
       </div>
     </div>
     <div v-if="editWorkers" class="workers-to-edit">
@@ -49,7 +49,7 @@
       </ul>
       <ul v-if="!addNewWorker" class="workers-list">
         <li v-for="worker in employerWorkers" :key="worker.id">
-          <edit-employer-workers-form v-bind:worker="worker" v-bind:employer="workersEmployer"></edit-employer-workers-form>
+          <add-edit-employer-workers-form v-bind:worker="worker" v-bind:employer="workersEmployer"></add-edit-employer-workers-form>
         </li>
       </ul>
     </div>
@@ -90,16 +90,16 @@
 
 <script>
 import closeButton from '../modals-elements/closeButton.vue';
-import addEmployerForm from './addEmployerForm.vue';
-import editEmployerWorkersForm from './editEmployerWorkersForm.vue';
+import addEditEmployerForm from './addEditEmployerForm.vue';
+import addEditEmployerWorkersForm from './addEditEmployerWorkersForm.vue';
 import notification from '../modals-elements/notification.vue';
 import { eventBus } from '../../../main';
 
 export default {
   components:{
     'close-button': closeButton,
-    'add-employer-form': addEmployerForm,
-    'edit-employer-workers-form': editEmployerWorkersForm,
+    'add-edit-employer-form': addEditEmployerForm,
+    'add-edit-employer-workers-form': addEditEmployerWorkersForm,
     notification
   },
   data(){
