@@ -5,7 +5,7 @@
     <div class="add-worker">
       <button @click="editWorkerSwitch">{{editWorkerText}}</button>
       <div v-if="editWorkerOn">
-        <add-worker-form v-bind:workerData="editWorkerData"></add-worker-form>
+        <add-edit-worker-form v-bind:workerData="editWorkerData"></add-edit-worker-form>
       </div>
     </div>
     <form class="search-worker--form">
@@ -18,10 +18,8 @@
           <div>
             <span class="name-pesel">{{worker.lastname}} {{worker.user.name}}&#8195;({{worker.pesel}})</span>
             <span class="email">{{worker.user.email}}</span>
-            <!-- <span>wymiar etatu: {{worker.part_time}}</span> -->
           </div>
           <div>
-            <!-- <span class="contract">Umowa: {{fixContractFrom(worker)}} - {{fixContractTo(worker)}}</span> -->
             <span class="employers">liczba pracodawców: {{worker.employers.length}}</span>
             <span class="effective">liczba efektywna: {{worker.effective}}</span>
             <span>ekwiwalent: {{worker.equivalent_amount}}</span>
@@ -41,7 +39,7 @@
 
 <script>
 import closeButton from '../modals-elements/closeButton.vue';
-import addWorkerForm from './addWorkerForm.vue';
+import addEditWorkerForm from './addEditWorkerForm.vue';
 import notification from '../modals-elements/notification.vue';
 import { eventBus } from '../../../main';
 import { setTimeout } from 'timers';
@@ -49,7 +47,7 @@ import { setTimeout } from 'timers';
 export default {
   components:{
     'close-button': closeButton,
-    'add-worker-form': addWorkerForm,
+    'add-edit-worker-form': addEditWorkerForm,
     notification
   },
   data(){
