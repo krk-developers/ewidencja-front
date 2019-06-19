@@ -101,7 +101,6 @@ export default {
           if(info){
             const endDatesFixedForCalendar = vue.$store.getters.getEvents.map(event => {
               if(event.legend_name !== 'DZUW' && !vue.$store.getters.eventsFixed){
-            console.log('ffff');
                 event.end = fixUpEndDate(event.end);
               }
               return event;
