@@ -283,6 +283,7 @@ export default {
         }
         else if(action === 'workerEdited'){
           this.notificationInfo.message = 'Zmieniono umowę pracownika.';
+          eventBus.$emit('disableAll');
         }
         else if(action === 'workerDeleted'){
           this.notificationInfo.message = 'Zwolniono pracownika.';
